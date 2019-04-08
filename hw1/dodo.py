@@ -14,6 +14,14 @@ def task_spatial_join():
         'actions': ['pipenv run python %(dependencies)s']
     }
 
+def task_fetch_census():
+    """Fetches 2018 augmentation data from census API."""
+    return {
+        'file_dep': ['fetch_census.py'],
+        'targets': ['data/census2018.csv'],
+        'actions': ['pipenv run python %(dependencies)s']
+    }
+
 def task_generate_report():
     """Generates PDF report from RMarkdown source."""
     return {
