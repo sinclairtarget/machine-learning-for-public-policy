@@ -102,3 +102,67 @@ crimes_2018 = df_2018.groupby('Community Area') \
 crimes_2018
 ```
 
+# Problem 2
+## Battery
+The median "Battery" crime occurs in a census tract that has a relatively low
+median household income. The census tract is typically 80% black, 5% Hispanic
+or Latino, and has a median age of 33.
+
+```{python}
+df = pd.read_csv('data/crimes2018_augmented.csv')
+df['black_perc'] = df['black_pop'] / df['total_pop']
+df['hispanic_perc'] = df['hispanic_pop'] / df['total_pop']
+
+battery = df[df['Primary Type'] == 'BATTERY'].copy()
+battery[battery.household_inc >= 0].household_inc.median()
+battery[battery.black_perc >= 0].black_perc.median()
+battery[battery.hispanic_perc >= 0].hispanic_perc.median()
+battery[battery.median_age >= 0].median_age.median()
+```
+
+## Homicide
+The median "Homicide" crime occurs in a poorer census tract than the median
+"Battery" crime. This census tract is also more black (92%) and less Hispanic
+or Latino (4%). The median age is more or less the same.
+
+```{python}
+homicide = df[df['Primary Type'] == 'HOMICIDE']
+homicide[homicide.household_inc >= 0].household_inc.median()
+homicide[homicide.black_perc >= 0].black_perc.median()
+homicide[homicide.hispanic_perc >= 0].hispanic_perc.median()
+homicide[homicide.median_age >= 0].median_age.median()
+```
+
+## Change Over Time
+```{python}
+battery['Datetime'] = pd.to_datetime(battery['Date'])
+
+battery_jan = battery[battery['Datetime'].dt.month == 1]
+battery_dec = battery[battery['Datetime'].dt.month == 12]
+
+battery_jan[battery_jan.household_inc >= 0].household_inc.median()
+battery_jan[battery_jan.black_perc >= 0].black_perc.median()
+battery_jan[battery_jan.hispanic_perc >= 0].hispanic_perc.median()
+battery_jan[battery_jan.median_age >= 0].median_age.median()
+
+battery_dec[battery_dec.household_inc >= 0].household_inc.median()
+battery_dec[battery_dec.black_perc >= 0].black_perc.median()
+battery_dec[battery_dec.hispanic_perc >= 0].hispanic_perc.median()
+battery_dec[battery_dec.median_age >= 0].median_age.median()
+```
+
+We can see from the above that there is not much change between the beginning
+of 2018 and the end of 2018.
+
+## Deceptive Practice and Sex Offense
+```{python}
+decept = df[df['Primary Type'] == 'DECEPTIVE PRACTICE']
+sex = df[df['Primary Type'] == 'SEX OFFENSE']
+
+decept[decept.household_inc >= 0].household_inc.median()
+sex[sex.household_inc >= 0].household_inc.median()
+```
+
+One difference is that the median household income in census tracts with lots
+of "Deceptive Practice" crimes was significantly higher than the median
+household income in census tracts with lots of "Sex Offense" crimes.

@@ -3,9 +3,9 @@ from census import Census
 
 TOTAL_POP = 'B01003_001E'
 BLACK_POP = 'B02001_003E'
-HISPANIC_POP = 'B03003_001E'
+HISPANIC_POP = 'B03003_003E'
 MEDIAN_AGE = 'B01002_001E'
-HOUSEHOLD_INC = 'B19001_001E'
+HOUSEHOLD_INC = 'B19013_001E'
 
 def rename_vars(tract):
     tract['total_pop'] = tract.pop(TOTAL_POP)
