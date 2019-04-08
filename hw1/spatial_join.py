@@ -1,5 +1,5 @@
-# This script uses geopandas and a census tract shapefile to add tract
-# information to each crime with lat/long coordinates.
+# This script uses geopandas and a census tract shapefile to add census tract
+# identifiers to each crime with lat/long coordinates.
 
 import pandas as pd
 from pandas import Series, DataFrame
