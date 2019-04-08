@@ -7,3 +7,6 @@ data/*.csv
 crime_analysis.pdf
 
 .env
+
+__pycache__
+.doit*
