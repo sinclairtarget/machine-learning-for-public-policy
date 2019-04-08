@@ -5,3 +5,14 @@ def task_fetch_crimes():
         'targets': ['data/crimes2017.csv', 'data/crimes2018.csv'],
         'actions': ['pipenv run python %(dependencies)s']
     }
+
+def task_generate_report():
+    """Generates PDF report from RMarkdown source."""
+    return {
+        'file_dep': ['crime_analysis.rmd',
+                     'data/crimes2017.csv',
+                     'data/crimes2018.csv'],
+        'targets': ['crime_analysis.pdf'],
+        'actions': ['pipenv run Rscript -e \'rmarkdown::render("crime_analysis.rmd")\'']
+    }
+

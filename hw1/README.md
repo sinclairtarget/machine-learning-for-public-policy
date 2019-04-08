@@ -18,3 +18,7 @@ unusual place, you can always create an `.env` file and add:
 ```
 LD_LIBRARY_PATH=/path/to/installed/library
 ```
+
+## Task Runner
+Doit is used to handle building/task running. Run `doit` to generate the final
+output report.
