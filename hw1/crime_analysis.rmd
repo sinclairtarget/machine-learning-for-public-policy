@@ -1,0 +1,104 @@
+---
+title: Crime in Chicago
+author: Sinclair Target
+output: pdf_document
+---
+
+```{python, echo=FALSE}
+import numpy as np
+import pandas as pd
+from pandas import Series, DataFrame
+import matplotlib.pyplot as plt
+```
+
+```{python}
+df_2017 = pd.read_csv('data/crimes2017.csv')
+df_2018 = pd.read_csv('data/crimes2018.csv')
+```
+
+# Problem 1
+## Types of Crime
+Across all of Chicago, the most common crime in both 2017 and 2018 was theft.
+Other common crimes included battery and assault.
+
+```{python}
+crimes_2017 = df_2017.groupby('Primary Type') \
+                     .size() \
+                     .sort_values(ascending=False).iloc[:5]
+crimes_2017
+
+crimes_2018 = df_2018.groupby('Primary Type') \
+                     .size() \
+                     .sort_values(ascending=False).iloc[:5]
+crimes_2018
+```
+
+These most common five crimes were the same across both years. Thefts were the
+most common crime by quite a ways, as can be seen in the following graphs:
+
+```{python, results = 'hide'}
+# 2017
+plt.barh(crimes_2017.index.to_numpy(), crimes_2017.values)
+plt.title('Most Common Crimes (2017)')
+plt.xlabel('Occurrences')
+plt.tight_layout()
+plt.show()
+plt.close()
+
+# 2018
+plt.barh(crimes_2018.index.to_numpy(), crimes_2018.values)
+plt.title('Most Common Crimes (2018)')
+plt.xlabel('Occurrences')
+plt.tight_layout()
+plt.show()
+plt.close()
+```
+
+## Crime Over Time
+We can see from the graph below that there is a seasonal pattern to crime. Most
+crimes, such as theft and battery, spike in the summer. But there are other
+crimes such as "deceptive practice" that spike in the winter.
+
+```{python, results = 'hide'}
+crimes = ['THEFT', 'ASSAULT', 'BATTERY', 'CRIMINAL DAMAGE', 'DECEPTIVE PRACTICE']
+
+crimes_2018 = df_2018[df_2018['Primary Type'].isin(crimes)]
+
+crimes_2018['Datetime'] = pd.to_datetime(crimes_2018['Date'])
+crimes_2018 = (crimes_2018.groupby(['Primary Type', crimes_2018['Datetime'].dt.month])
+                          .size()
+                          .to_frame('Count')
+                          .reset_index())
+
+for crime in crimes:
+    these_crimes = crimes_2018[crimes_2018['Primary Type'] == crime]
+    plt.plot(these_crimes.Datetime.values, these_crimes.Count.values)
+
+plt.xticks(range(1, 13), ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul',
+                          'Aug', 'Sep', 'Oct', 'Nov', 'Dec'])
+
+plt.title('Most Common Crimes Over Year (2018)')
+plt.xlabel('Months')
+plt.ylabel('Occurrences')
+plt.legend(crimes, prop={'size': 6})
+
+plt.show()
+plt.close()
+```
+
+## Crime Locations
+The community areas with the most crime (the 25th, 8th, 32nd, 28th, and 29th)
+are all either downtown or on the west side.
+
+```{python}
+crimes_2017 = df_2017.groupby('Community Area') \
+                     .size() \
+                     .sort_values(ascending=False).iloc[:5]
+crimes_2017
+
+crimes_2018 = df_2018.groupby('Community Area') \
+                     .size() \
+                     .sort_values(ascending=False).iloc[:5]
+crimes_2018
+```
+
