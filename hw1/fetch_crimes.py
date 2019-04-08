@@ -1,3 +1,5 @@
+# This script fetches crime data from the city of chicago data portal.
+
 import requests
 
 url_2017 = 'https://data.cityofchicago.org/api/views/d62x-nvdr/rows.csv?accessType=DOWNLOAD'
