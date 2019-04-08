@@ -5,3 +5,5 @@ data/*.csv
 
 # This should be generated from the .rmd file
 crime_analysis.pdf
+
+.env
