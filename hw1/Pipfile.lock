@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "44532904c4f063df1dd9c08d12094d408cdfa64940aa1c82d6175ab2a8de71a0"
+            "sha256": "724868cabf80287084c7a6afeeba1aaa1b396aa21f5f71432cc8fa28eed015db"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -201,7 +201,6 @@
         },
         "munch": {
             "hashes": [
-                "sha256:27c35ffdcb9767cb2224c4d76c3e672243c47b22f7fa0a8b0da8c3451f2cd9bc",
                 "sha256:6ae3d26b837feacf732fb8aa5b842130da1daf221f5af9f9d4b2a0a6414b0d51"
             ],
             "version": "==2.3.2"
@@ -358,6 +357,15 @@
             ],
             "index": "pypi",
             "version": "==2.21.0"
+        },
+        "rtree": {
+            "hashes": [
+                "sha256:6cb9cf3000963ea6a3db777a597baee2bc55c4fc891e4f1967f262cc96148649",
+                "sha256:8526431aa15d8cea1c07b451ce853b62b1da4cf6b74c07810aba5b81d12efe66",
+                "sha256:a9e67386073f93f22449f396d5993dfe479335169c376f3f7fb04a396391f0dc"
+            ],
+            "index": "pypi",
+            "version": "==0.8.3"
         },
         "shapely": {
             "hashes": [

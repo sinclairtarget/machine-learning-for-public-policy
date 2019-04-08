@@ -13,6 +13,7 @@ requests = "*"
 matplotlib = "*"
 census = "*"
 geopandas = "*"
+rtree = "*"
 
 [requires]
 python_version = "3.7"
