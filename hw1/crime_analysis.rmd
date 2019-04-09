@@ -254,3 +254,35 @@ is?
 We should also always be worried about the quality of the data itself, because
 the analysis can be no more accurate than the data provided. Police officers
 may not have the time or inclination to record crime data accurately.
+
+# Problem 4
+## A
+According to the US Census Bureau's geocoding service, 2111 S Michigan Avenue
+is in census tract 330100.
+
+```{python}
+counts = df[df['tract'] == 330100].groupby('Primary Type') \
+                                  .size() \
+                                  .to_frame('count')
+counts['prob'] = counts['count'] / np.sum(counts['count'])
+counts.sort_values('count', ascending=False)
+```
+
+By far the most common crime in this census tract is theft. Thefts make up 33%
+of all crimes within the census tract. So the chance that this call is a call
+about theft is 33%.
+
+## B
+The answer to this question really depends on how many people live in each
+neighborhood. Theft may be proportionally more likely in one neighborhood than
+another, but if one neighborhood is much larger in terms of population, then
+the call probably came from that neighborhood regardless.
+
+So we cannot really say which neighborhood the call was more likely to come
+from.
+
+## C
+There are $100 + 160 = 260$ total calls that are about battery. $100$ of these
+calls are from Garfield Park, so the probability that a battery call is from
+Garfield Park is $100 / 260 = 0.38$. $160$ of these calls are from Uptown, so
+the probability that a battery call is from Uptown is $160 / 260 = 0.62$.
