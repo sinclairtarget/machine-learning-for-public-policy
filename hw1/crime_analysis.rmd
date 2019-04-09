@@ -166,3 +166,91 @@ sex[sex.household_inc >= 0].household_inc.median()
 One difference is that the median household income in census tracts with lots
 of "Deceptive Practice" crimes was significantly higher than the median
 household income in census tracts with lots of "Sex Offense" crimes.
+
+# Problem 3
+## Change in Crime
+Crime seems to have changed very little in Chicago between 2017 and 2018. If
+you look at the total number of crimes, for example, there has been no
+significant increase or decrease.
+
+```{python}
+len(df_2017)
+len(df_2018)
+```
+
+## The Aldermanic Candidate's Claims
+These claims appear to be entirely wrong. Robbery seems to have fallen by about
+10% (and not increased by 21%). Battery seems to have risen by 7% but not by
+136%. Burglary has fallen slightly and not risen. The same goes for motor
+vehicle theft.
+
+```{python}
+# Whether date is between 6/29 and 7/26 (inclusive)
+def in_july(year, dt):
+    start = pd.Timestamp(year, 6, 29)
+    end = pd.Timestamp(year, 7, 26)
+    return dt >= start and dt <= end
+
+df_2017['Datetime'] = pd.to_datetime(df_2017['Date'])
+df_2018['Datetime'] = pd.to_datetime(df_2018['Date'])
+
+july_2017 = df_2017[df_2017['Datetime'].apply(lambda dt: in_july(2017, dt))]
+july_2018 = df_2018[df_2018['Datetime'].apply(lambda dt: in_july(2018, dt))]
+
+robbery_2017 = july_2017[july_2017['Primary Type'] == 'ROBBERY']
+robbery_2018 = july_2018[july_2018['Primary Type'] == 'ROBBERY']
+len(robbery_2018) / len(robbery_2017)
+
+battery_2017 = july_2017[july_2017['Primary Type'] == 'BATTERY']
+battery_2018 = july_2018[july_2018['Primary Type'] == 'BATTERY']
+len(battery_2018) / len(battery_2017)
+
+burglary_2017 = july_2017[july_2017['Primary Type'] == 'BURGLARY']
+burglary_2018 = july_2018[july_2018['Primary Type'] == 'BURGLARY']
+len(burglary_2018) / len(burglary_2017)
+
+motor_2017 = july_2017[july_2017['Primary Type'] == 'MOTOR VEHICLE THEFT']
+motor_2018 = july_2018[july_2018['Primary Type'] == 'MOTOR VEHICLE THEFT']
+len(motor_2018) / len(motor_2017)
+```
+
+The claims are incorrect, so I do not agree with the conclusion. Overall, crime
+in Chicago has not changed significantly. It might be possible to pick a few
+select crimes to make it look as if crime is rising, but this is not the case.
+
+## Advice for The New Mayor
+1. Theft seems to be a big problem in Chicago. It is the largest single
+   category of crimes. Since it is the largest crime category, reducing theft
+   will significantly reduce overall crime.
+2. Crime in Chicago is partly a seasonal phenomenon. Certain crimes,
+   particularly theft and battery, seem to occur most often in the summer.
+3. Homicides appear to be especially common in neighborhoods that at poorer and
+   more black than the average neighborhood. This suggests that any kind of
+   intervention to reduce homicides needs to consider how race plays a role.
+4. Crime does not seem to be growing. The total number of crimes in 2018 was
+   not significantly different from the total number of crimes in 2017. But
+   this also means that efforts to reduce crimes have not been especially
+   successful.
+5. In Chicago, which is a highly segregated city, different neighborhoods tend
+   to have different kinds of crimes. "Deceptive practice" crimes, for example,
+   tend to be committed in relatively well-off neighborhoods.
+
+## Caveats
+A big, big caveat is that this dataset presumably only involves crimes that
+have been observed or thwarted by police. So many crimes may still be taking
+place that are not included in this dataset. What is doubly important to note
+here is that some neighborhoods are probably more heavily policed than others,
+so while we might have observed more "Sex Offense" crimes in lower income
+neighborhoods in this dataset, the reality may just be that in higher income
+neighborhoods "Sex Offense" crimes go unobserved.
+
+Another potential problem is that it is not clear from the data alone how
+crimes are categorized. Does a crime that involves robbery _and_ the theft of a
+car count as one crime or two? If it counts as one, then should it be
+categorized as "Motor Vehicle Theft" or "Robbery"? If it counts as two, then
+wouldn't that make Chicago seems like a scarier place to live than it actually
+is?
+
+We should also always be worried about the quality of the data itself, because
+the analysis can be no more accurate than the data provided. Police officers
+may not have the time or inclination to record crime data accurately.
