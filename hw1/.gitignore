@@ -1,12 +1,5 @@
-.venv/
-
 # These should be downloaded by script
 data/*.csv
 
 # This should be generated from the .rmd file
 crime_analysis.pdf
-
-.env
-
-__pycache__
-.doit*
