@@ -11,10 +11,13 @@ def impute(df, col, how='avg'):
 
     df.loc[df[col].isnull(), col] = subst
 
-def bin(df, col, bins):
+def bin(df, col, bins, labels=None):
     new_col = col + '_binned'
     max_val = np.max(df[col])
-    df[new_col] = pd.cut(df[col], bins + [max_val], include_lowest=True)
+    df[new_col] = pd.cut(df[col],
+                         bins + [max_val],
+                         include_lowest=True,
+                         labels=labels)
 
 def dummify(df, col):
     uniqs = pd.unique(df[col])
