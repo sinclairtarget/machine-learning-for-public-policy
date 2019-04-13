@@ -19,5 +19,6 @@ def task_evaluate():
     return {
         'file_dep': ['evaluate.py', 'data/credit-data-predicted.csv'],
         'actions': ['pipenv run python evaluate.py'],
-        'verbosity': 2
+        'verbosity': 2,
+        'uptodate': [False]
     }
