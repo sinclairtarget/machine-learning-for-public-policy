@@ -9,6 +9,7 @@ verify_ssl = true
 pandas = "*"
 ipython = "*"
 doit = "*"
+sklearn = "*"
 
 [requires]
 python_version = "3.7"
