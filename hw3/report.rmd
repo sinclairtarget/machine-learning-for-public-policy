@@ -1,0 +1,15 @@
+---
+title: Predicting Funding on DonorsChoose.org
+author: Sinclair Target
+output: pdf_document
+---
+
+```{python, echo=FALSE}
+import numpy as np
+import pandas as pd
+from pandas import Series, DataFrame
+import matplotlib.pyplot as plt
+```
+
+# Introduction
+Blah blah blah blah.
