@@ -3,6 +3,7 @@ This module contains functions that explore distributions of values and
 relationships between columns.
 """
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
 
 def extrema(narray):
@@ -22,6 +23,14 @@ def unique_columns(df):
             colnames.append(colname)
 
     return colnames
+
+
+def binary_columns(df):
+    """
+    Returns a list of columns in the dataframe that only have two unique
+    values.
+    """
+    return [name for name in df.columns if len(pd.unique(df[name])) == 2]
 
 
 def plot_missing(df, *colnames):
