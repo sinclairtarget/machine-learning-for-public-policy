@@ -12,6 +12,18 @@ def extrema(narray):
     return (np.min(narray), np.max(narray))
 
 
+def unique_columns(df):
+    """
+    Returns a list of columns that have a unique value for every row.
+    """
+    colnames = []
+    for colname in df.columns:
+        if df[colname].nunique() == len(df):
+            colnames.append(colname)
+
+    return colnames
+
+
 def plot_missing(df, *colnames):
     """
     Plots a bar chart comparing the number of present and missing values for
