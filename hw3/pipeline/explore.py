@@ -33,6 +33,15 @@ def binary_columns(df):
     return [name for name in df.columns if len(pd.unique(df[name])) == 2]
 
 
+def missing_columns(df):
+    """
+    Returns a list of columns in the dataframe that include NaN or null values.
+    """
+    total = len(df)
+    counts = df.count()
+    return [name for name in df.columns if counts[name] < total]
+
+
 def plot_missing(df, *colnames):
     """
     Plots a bar chart comparing the number of present and missing values for
