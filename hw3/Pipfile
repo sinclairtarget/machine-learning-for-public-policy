@@ -15,6 +15,7 @@ census = "*"
 geopandas = "*"
 rtree = "*"
 sklearn = "*"
+jupytext = "*"
 
 [requires]
 python_version = "3.7"
