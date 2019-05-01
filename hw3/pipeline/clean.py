@@ -32,11 +32,12 @@ def bin(df, col, bins, labels=None):
                          labels=labels)
 
 
-def dummify(df, col):
+def dummify(df, *colnames):
     """
-    Converts a column containing discrete values into several binary columns.
+    Converts columns containing discrete values into several binary columns.
     """
-    uniqs = pd.unique(df[col])
-    for uniq in uniqs:
-        new_col = col + '_is_' + str(uniq)
-        df[new_col] = df[col] == uniq
+    for colname in colnames:
+        uniqs = df[colname].unique()
+        for uniq in uniqs:
+            new_colname = colname + '_is_' + str(uniq).lower().replace(' ', '_')
+            df[new_colname] = df[colname] == uniq
