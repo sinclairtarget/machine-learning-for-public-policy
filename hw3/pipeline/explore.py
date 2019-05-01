@@ -38,10 +38,11 @@ def plot_missing(df, *colnames):
     Plots a bar chart comparing the number of present and missing values for
     the given columns.
     """
-    fig = plt.figure(1)
+    fig = plt.figure(1, figsize=(9, 6))
 
+    fig_columns = len(colnames) // 3 + 1;
     for i, colname in enumerate(colnames, start=1):
-        plt.subplot(1, len(colnames), i)
+        plt.subplot(fig_columns, 3, i)
         missing = df[colname][df[colname].isnull()]
         present = df[colname][df[colname].notnull()]
         plt.title(colname)
