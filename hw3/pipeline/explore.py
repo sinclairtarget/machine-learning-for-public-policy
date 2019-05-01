@@ -12,19 +12,38 @@ def extrema(narray):
     return (np.min(narray), np.max(narray))
 
 
-def plot_missing(df, *cols):
+def plot_missing(df, *colnames):
     """
     Plots a bar chart comparing the number of present and missing values for
     the given columns.
     """
     fig = plt.figure(1)
 
-    for i, col in enumerate(cols, start=1):
-        plt.subplot(1, len(cols), i)
-        missing = df[col][df[col].isnull()]
-        present = df[col][df[col].notnull()]
-        plt.title(col)
+    for i, colname in enumerate(colnames, start=1):
+        plt.subplot(1, len(colnames), i)
+        missing = df[colname][df[colname].isnull()]
+        present = df[colname][df[colname].notnull()]
+        plt.title(colname)
         plt.bar(['present', 'missing'], [len(present), len(missing)])
 
     plt.tight_layout()
+    plt.show()
+
+
+def plot_label(df, colname):
+    """
+    Plots a bar chart showing the distribution of values between true and
+    false for a single column.
+    """
+    plot_binary_predicate(df, colname, 'true', 'false', lambda col: col == True)
+
+
+def plot_binary_predicate(df, col, true_name, false_name, predicate):
+    """
+    Plots a bar chart showing the distribution of values between two classes,
+    one where the predicate is true and one where the predicate is false.
+    """
+    true_count = len(df[col][predicate(df[col])])
+    false_count = len(df[col][~predicate(df[col])])
+    plt.bar([true_name, false_name], [true_count, false_count])
     plt.show()
