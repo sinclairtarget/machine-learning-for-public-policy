@@ -16,6 +16,7 @@ geopandas = "*"
 rtree = "*"
 sklearn = "*"
 jupytext = "*"
+doit = "*"
 
 [requires]
 python_version = "3.7"
