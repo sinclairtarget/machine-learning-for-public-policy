@@ -40,4 +40,4 @@ def dummify(df, *colnames):
         uniqs = df[colname].unique()
         for uniq in uniqs:
             new_colname = colname + '_is_' + str(uniq).lower().replace(' ', '_')
-            df[new_colname] = df[colname] == uniq
+            df[new_colname] = (df[colname] == uniq).astype(float)

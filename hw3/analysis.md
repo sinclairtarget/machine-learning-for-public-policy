@@ -59,10 +59,10 @@ pipeline.binary_columns(df)
 
 We convert all of them to explicit binary columns:
 ```python
-df.school_charter = df.school_charter == 't'
-df.school_magnet = df.school_magnet == 't'
-df.eligible_double_your_impact_match = \
-    df.eligible_double_your_impact_match == 't'
+for colname in ['school_charter',
+                'school_magnet',
+                'eligible_double_your_impact_match']:
+    df[colname] = (df[colname] == 't').astype(float)
 ```
 
 The date columns should also be parsed into datetime objects.
@@ -118,8 +118,11 @@ df = df.drop(columns=['teacher_prefix',
 Finally, we need to label our data.
 
 ```python
-df['not_funded_in_60_days'] = \
-    (df.datefullyfunded - df.date_posted).apply(lambda d: d.days > 60)
+df['not_funded_in_60_days'] = (
+    (df.datefullyfunded - df.date_posted)
+    .apply(lambda d: d.days > 60)
+    .astype(float)
+)
 ```
 
 We drop our date columns now that we have our labels:
