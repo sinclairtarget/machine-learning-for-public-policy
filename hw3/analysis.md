@@ -174,6 +174,12 @@ dfs_test = [df_test for _, df_test in validation_splits]
 [('split' + str(i), df_test.index.min(), df_test.index.max()) \
     for i, df_test in enumerate(dfs_test, 1)]
 ```
+```python
+from pipeline import Trainer, Tester
+
+trainer = Trainer(dfs_train, label_colname, SEED)
+tester = Tester(dfs_test, label_colname)
+```
 
 #### Logistic Regression
 For our logistic regression model, we have to decide whether to use L1 or L2
@@ -183,13 +189,11 @@ regularization.
 from pipeline import ResultCollection
 
 lr_results = ResultCollection()
-lr_l1_models = pipeline.logistic_regression(dfs_train, label_colname,
-                                            penalty='l1')
-lr_results.add('L1', pipeline.test_all(lr_l1_models, dfs_test, label_colname))
+lr_l1_models = trainer.logistic_regression(penalty='l1')
+lr_results.add('L1', tester.test(*lr_l1_models))
 
-lr_l2_models = pipeline.logistic_regression(dfs_train, label_colname,
-                                            penalty='l2')
-lr_results.add('L2', pipeline.test_all(lr_l2_models, dfs_test, label_colname))
+lr_l2_models = trainer.logistic_regression(penalty='l2')
+lr_results.add('L2', tester.test(*lr_l2_models))
 lr_results.df
 ```
 ```python
@@ -198,3 +202,25 @@ lr_results.plot_statistic('f1')
 
 It looks like using L1 regression here is marginally better, though both models
 perform poorly.
+
+#### Decision Tree
+For our decision tree model, we need to experiment with tree depth to see what
+depth is best.
+
+```python
+tree_results = ResultCollection()
+
+tree_no_max_models = trainer.decision_tree(max_depth=None)
+tree_results.add('no_max', tester.test(*tree_no_max_models))
+
+for max_depth in [6, 12, 24]:
+    models = trainer.decision_tree(max_depth=max_depth)
+    tree_results.add(str(max_depth) + '_max', tester.test(*models))
+
+tree_results.df
+```
+```python
+tree_results.plot_statistic('f1')
+```
+
+It looks like setting no max depth is appropriate here.
