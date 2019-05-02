@@ -16,6 +16,8 @@ days of first being posted on the site.
 import pandas as pd
 import pipeline
 
+SEED = 1234
+
 df = pipeline.read_csv('projects_2012_2013.csv')
 ```
 
@@ -118,14 +120,21 @@ df = df.drop(columns=['teacher_prefix',
 Finally, we need to label our data.
 
 ```python
-df['not_funded_in_60_days'] = (
+label_colname = 'not_funded_in_60_days'
+df[label_colname] = (
     (df.datefullyfunded - df.date_posted)
     .apply(lambda d: d.days > 60)
     .astype(float)
 )
 ```
 
-We drop our date columns now that we have our labels:
+We also need to sort it in order of `date_posted`:
+```python
+df = df.sort_values('date_posted')
+df = df.reset_index(drop=True)
+```
+
+We can now drop our date columns:
 ```python
 df = df.drop(columns=['date_posted',
                       'datefullyfunded'])
@@ -135,3 +144,57 @@ Our final dataframe looks like the following:
 ```python
 df.head()
 ```
+
+## Model Building
+### Training Data
+We separate our data into a validation and a test set. The validation set will
+be used for experimenting with model parameters. The test set will be used to
+evaluate our parameterized models at different thresholds.
+
+```python
+splits = pipeline.time_split(df, 3)
+[(df_train.index.min(), df_train.index.max(), df_test.index.max()) \
+    for df_train, df_test in splits]
+```
+```python
+validation_splits = splits[:-1]
+test_split = splits[-1:]
+```
+
+### Models
+We will use our validation set to parameterize our models. This will give us
+two validation training sets.
+```python
+dfs_train = [df_train for df_train, _ in validation_splits]
+dfs_test = [df_test for _, df_test in validation_splits]
+[('split' + str(i), df_train.index.min(), df_train.index.max()) \
+    for i, df_train in enumerate(dfs_train, 1)]
+```
+```python
+[('split' + str(i), df_test.index.min(), df_test.index.max()) \
+    for i, df_test in enumerate(dfs_test, 1)]
+```
+
+#### Logistic Regression
+For our logistic regression model, we have to decide whether to use L1 or L2
+regularization.
+
+```python
+from pipeline import ResultCollection
+
+lr_results = ResultCollection()
+lr_l1_models = pipeline.logistic_regression(dfs_train, label_colname,
+                                            penalty='l1')
+lr_results.add('L1', pipeline.test_all(lr_l1_models, dfs_test, label_colname))
+
+lr_l2_models = pipeline.logistic_regression(dfs_train, label_colname,
+                                            penalty='l2')
+lr_results.add('L2', pipeline.test_all(lr_l2_models, dfs_test, label_colname))
+lr_results.df
+```
+```python
+lr_results.plot_statistic('f1')
+```
+
+It looks like using L1 regression here is marginally better, though both models
+perform poorly.
