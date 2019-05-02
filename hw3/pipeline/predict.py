@@ -2,57 +2,99 @@
 This module contains helper methods that wrap sklearn prediction models.
 """
 import pandas as pd
-from sklearn.linear_model import LogisticRegression
 from sklearn.dummy import DummyClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.tree import DecisionTreeClassifier
 from .result import PredictionResult
 
-def dummy(df, label_colname, seed):
+class Trainer:
     """
-    Returns a dummy classifier using the 'stratified' technique.
+    Provides model training methods for a particular set of training data.
     """
-    y = df[label_colname].values
-    X = df.drop(columns=[label_colname]).values
-
-    model = DummyClassifier(random_state=seed)
-    model.fit(X, y)
-    return model
+    def __init__(self, dfs, label_colname, seed):
+        self.dfs = dfs
+        self.label_colname = label_colname
+        self.seed = seed
 
 
-def logistic_regression(dfs, label_colname, penalty='l2'):
+    def dummy(self):
+        """
+        Returns dummy classifier models using the 'stratified' technique.
+        """
+        models = []
+        for X, y in self._training_data():
+            model = DummyClassifier(random_state=self.seed)
+            model.fit(X, y)
+            models.append(model)
+
+        return models
+
+
+    def logistic_regression(self, penalty='l2'):
+        """
+        Returns logistic regression models fitted to the training data.
+        """
+        models = []
+        for X, y in self._training_data():
+            model = LogisticRegression(solver='liblinear',
+                                       penalty=penalty,
+                                       random_state=self.seed)
+            model.fit(X, y)
+            models.append(model)
+
+        return models
+
+
+    def decision_tree(self, max_depth=None):
+        """
+        Returns decision tree models fitted to the given training data.
+        """
+        models = []
+        for X, y in self._training_data():
+            model = DecisionTreeClassifier(max_depth=max_depth,
+                                           random_state=self.seed)
+            model.fit(X, y)
+            models.append(model)
+
+        return models
+
+
+    def _training_data(self):
+        for df in self.dfs:
+            X = df.drop(columns=[self.label_colname]).values
+            y = df[self.label_colname].values
+            yield X, y
+
+
+class Tester:
     """
-    Returns logistic regression models fitted to the given training data.
+    Provides test methods for a particular set of test data.
     """
-    models = []
-    for df in dfs:
-        y = df[label_colname].values
-        X = df.drop(columns=[label_colname]).values
-
-        model = LogisticRegression(solver='liblinear', penalty=penalty)
-        model.fit(X, y)
-        models.append(model)
-
-    return models
+    def __init__(self, dfs, label_colname):
+        self.dfs = dfs
+        self.label_colname = label_colname
 
 
-def test(model, df, label_colname):
-    """
-    Uses the fitted model to generate a prediction result dataframe.
-    """
-    y_actual = df[label_colname].values
-    X = df.drop(columns=[label_colname]).values
-    y_predict = model.predict(X)
+    def test(self, *models):
+        """
+        Uses the fitted models to generate a prediction result dataframe.
+        """
+        if len(models) != len(self.dfs):
+            raise Exception('Number of models does not match test sets.')
 
-    df_results = pd.DataFrame({ 'actual': y_actual,
-                                'predict': y_predict },
-                              dtype=float)
-    return PredictionResult(df_results)
+        results = []
+        for (X, y_actual), model in zip(self._test_data(), models):
+            y_predict = model.predict(X)
+            df_results = pd.DataFrame({ 'actual': y_actual,
+                                        'predict': y_predict },
+                                      dtype=float)
+            results.append(PredictionResult(df_results))
+
+        return PredictionResult.stack(results)
 
 
-def test_all(models, dfs, label_colname):
-    """
-    Generates prediction results a series of models match with test data.
-    """
-    return PredictionResult.stack([
-        test(model, df, label_colname)
-        for model, df in zip(models, dfs)
-    ])
+    def _test_data(self):
+        for df in self.dfs:
+            X = df.drop(columns=[self.label_colname]).values
+            y_actual = df[self.label_colname].values
+            yield X, y_actual
