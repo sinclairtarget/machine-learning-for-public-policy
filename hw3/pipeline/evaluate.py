@@ -19,16 +19,3 @@ def split(df, label_colname, test_size, seed):
     df_test = pd.DataFrame(np.column_stack((X_test, y_test)),
                             columns=df.columns)
     return df_train, df_test
-
-
-def accuracy(df, target_col, predict_col=None):
-    """
-    Calculates accuracy given a label/target column and a predicted value
-    column.
-    """
-    if predict_col == None:
-        predict_col = target_col + '_predict'
-
-    total = len(df)
-    correct = len(df[df[target_col] == df[predict_col]])
-    return correct / total
