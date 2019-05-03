@@ -321,6 +321,8 @@ results.df
 results.plot_statistic('f1', xlabel='model')
 ```
 
+The above graph shows the F1 performance of our models with no threshold set.
+
 We also want to test using our thesholds:
 ```python
 threshold_results = tester.evaluate(models,
@@ -329,4 +331,10 @@ threshold_results.df
 ```
 ```python
 threshold_results.plot_statistic('f1', xlabel='threshold')
+```
+```python
+threshold_results.plot_statistic('precision', xlabel='threshold')
+```
+```python
+threshold_results.plot_statistic('recall', xlabel='threshold')
 ```

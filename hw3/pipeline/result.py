@@ -68,6 +68,15 @@ class PredictionResult:
                                     self.df.predict.values)
 
 
+    def auc(self):
+        if self.threshold:
+            return metrics.roc_auc_score(self.df.actual.values,
+                                         self._threshold_predict())
+        else:
+            return metrics.roc_auc_score(self.df.actual.values,
+                                         self.df.predict.values)
+
+
     def matrix(self):
         m = metrics.confusion_matrix(self.df.actual.values,
                                      self.df.predict.values)
@@ -81,7 +90,8 @@ class PredictionResult:
             'accuracy': self.accuracy(),
             'precision': self.precision(),
             'recall': self.recall(),
-            'f1': self.f1()
+            'f1': self.f1(),
+            'auc': self.auc()
         })
 
 
@@ -126,6 +136,7 @@ class ResultCollection:
                          label=suffix)
             plt.legend()
         else:
+            plt.figure(figsize=(9, 3))
             plt.bar(stat_df.columns, stat_df.iloc[0].values)
 
         plt.xlabel(xlabel)
