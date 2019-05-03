@@ -142,6 +142,14 @@ class Tester:
         Model results are "stacked": They are assumed to be the results of the
         same conceptual model applied to different splits.
         """
+        results = self._test(*models)
+        if len(results) > 1:
+            return ResultCollection.from_stack(results)
+        else:
+            return results[0]
+
+
+    def _test(self, *models):
         if len(models) != len(self.dfs):
             raise Exception('Number of models does not match test sets.')
 
@@ -160,24 +168,28 @@ class Tester:
                                       dtype=float)
             results.append(PredictionResult(df_results))
 
-        return PredictionResult.stack(results) if len(results) > 1 \
-                                               else results[0]
+        return results
 
 
-    def test_all(self, model_dict):
+    def evaluate(self, model_dict, thresholds=None):
         """
-        Tests lots of different models of different types.
+        Tests lots of different models at different thresholds.
         """
-        results = ResultCollection()
+        collection = ResultCollection()
         for name, models in model_dict.items():
             models = wrap_list(models)
-            result = self.test(*models)
-            if isinstance(result, PredictionResult):
-                result = PredictionResult.stack([result])
+            result = self._test(*models)[0] # Hack for now
 
-            results.add(name, result)
+            if thresholds:
+                results = result.with_thresholds(thresholds)
 
-        return results
+                this_collection = ResultCollection.from_stack(results,
+                                                              index=thresholds)
+                collection.join(name, this_collection)
+            else:
+                collection.join(name, result)
+
+        return collection
 
 
     def _test_data(self):
