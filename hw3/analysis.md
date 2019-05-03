@@ -286,6 +286,24 @@ svm_results.plot_statistic('f1')
 It looks like choosing $c$ doesn't make much of a difference, so we might as
 well go with the default of $c = 1$.
 
+#### Random Forest
+For random forests, we need to decide on the number of trees to use.
+
+```python
+forest_results = ResultCollection()
+
+for n_trees in [10, 50, 100]:
+    models = trainer.forest(n_trees=n_trees)
+    forest_results.join('n_' + str(n_trees), tester.test(*models))
+
+forest_results.df
+```
+```python
+forest_results.plot_statistic('f1')
+```
+
+Around 50 trees seems to be the best option.
+
 ## Evaluation
 Now that we are evaluating our models, we will want to use our final holdout
 time split.
@@ -310,7 +328,8 @@ params = {
     'linear_regression': { 'penalty': 'l1' },
     'decision_tree': { 'max_depth': None },
     'k_nearest': { 'k': 3 },
-    'svm': { 'c': 1 }
+    'svm': { 'c': 1 },
+    'forest': { 'n_trees': 50 }
 }
 
 models = trainer.train_all(parameters=params)

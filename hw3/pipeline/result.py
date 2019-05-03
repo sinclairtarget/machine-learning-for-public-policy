@@ -136,7 +136,7 @@ class ResultCollection:
                          label=suffix)
             plt.legend()
         else:
-            plt.figure(figsize=(9, 3))
+            plt.figure(figsize=(12, 3))
             plt.bar(stat_df.columns, stat_df.iloc[0].values)
 
         plt.xlabel(xlabel)

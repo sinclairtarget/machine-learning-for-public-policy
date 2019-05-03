@@ -7,6 +7,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.svm import LinearSVC
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import Pipeline
 from .result import PredictionResult, ResultCollection
@@ -93,6 +94,20 @@ class Trainer:
         return models if len(models) > 1 else models[0]
 
 
+    def forest(self, n_trees=10):
+        """
+        Returns random forest models fitted to the training data.
+        """
+        models = []
+        for X, y in self._training_data():
+            model = RandomForestClassifier(n_estimators=n_trees,
+                                           random_state=self.seed)
+            model.fit(X, y)
+            models.append(model)
+
+        return models if len(models) > 1 else models[0]
+
+
     def train_all(self, parameters={}, exclude=[]):
         """
         Train all the things.
@@ -104,7 +119,8 @@ class Trainer:
             'logistic_regression': self.logistic_regression,
             'decision_tree': self.decision_tree,
             'k_nearest': self.k_nearest,
-            'linear_svm': self.linear_svm
+            'linear_svm': self.linear_svm,
+            'forest': self.forest
         }
 
         models = dict()
