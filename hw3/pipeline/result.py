@@ -125,7 +125,7 @@ class ResultCollection:
         self.suffixes.append(suffix)
 
 
-    def plot_statistic(self, stat_name, xlabel='split'):
+    def plot_statistic(self, stat_name, xlabel='split', filename=None):
         stat_df = self.df.filter(regex=stat_name)
         stat_df.columns = self.suffixes
 
@@ -137,12 +137,15 @@ class ResultCollection:
                          label=suffix)
             plt.legend()
         else:
-            plt.figure(figsize=(12, 3))
+            plt.figure(figsize=(14, 3))
             plt.bar(stat_df.columns, stat_df.iloc[0].values)
 
         plt.xlabel(xlabel)
         plt.ylabel(stat_name)
         plt.show()
+
+        if filename:
+            plt.savefig(filename)
 
 
     def from_stack(results, index=None):

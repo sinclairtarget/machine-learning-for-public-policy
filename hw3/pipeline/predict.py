@@ -7,7 +7,8 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.svm import LinearSVC
-from sklearn.ensemble import RandomForestClassifier, BaggingClassifier
+from sklearn.ensemble import RandomForestClassifier, BaggingClassifier, \
+                             AdaBoostClassifier
 from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import Pipeline
 from .result import PredictionResult, ResultCollection
@@ -124,6 +125,22 @@ class Trainer:
         return models if len(models) > 1 else models[0]
 
 
+    def boosting(self, n_estimators=10):
+        """
+        Returns boosting models fitted to the training data.
+
+        Underlying base estimator is a decision tree.
+        """
+        models = []
+        for X, y in self._training_data():
+            model = AdaBoostClassifier(n_estimators=n_estimators,
+                                       random_state=self.seed)
+            model.fit(X, y)
+            models.append(model)
+
+        return models if len(models) > 1 else models[0]
+
+
     def train_all(self, parameters={}, exclude=[]):
         """
         Train all the things.
@@ -137,7 +154,8 @@ class Trainer:
             'k_nearest': self.k_nearest,
             'linear_svm': self.linear_svm,
             'forest': self.forest,
-            'bagging': self.bagging
+            'bagging': self.bagging,
+            'boosting': self.boosting
         }
 
         models = dict()
@@ -168,7 +186,7 @@ class Tester:
         self.label_colname = label_colname
 
 
-    def test(self, *models):
+    def test(self, *models, threshold=None):
         """
         Uses the fitted models to generate a prediction result dataframe.
 
@@ -182,9 +200,10 @@ class Tester:
             return results[0]
 
 
-    def _test(self, *models):
+    def _test(self, *models, threshold=None):
         if len(models) != len(self.dfs):
-            raise Exception('Number of models does not match test sets.')
+            raise Exception(f"Number of models ({len(models)}) does not match"
+                            f" test sets ({len(self.dfs)}).")
 
         results = []
         for (X, y_actual), model in zip(self._test_data(), models):
@@ -201,6 +220,9 @@ class Tester:
                                       dtype=float)
             results.append(PredictionResult(df_results))
 
+        if threshold:
+            results = [r.with_threshold(threshold) for r in results]
+
         return results
 
 
@@ -209,18 +231,29 @@ class Tester:
         Tests lots of different models at different thresholds.
         """
         collection = ResultCollection()
-        for name, models in model_dict.items():
-            models = wrap_list(models)
-            result = self._test(*models)[0] # Hack for now
+        for name, model in model_dict.items():
+            result = self._test(model)[0] # Hack for now
 
             if thresholds:
                 results = result.with_thresholds(thresholds)
-
                 this_collection = ResultCollection.from_stack(results,
                                                               index=thresholds)
                 collection.join(name, this_collection)
             else:
                 collection.join(name, result)
+
+        return collection
+
+
+    def evaluate_splits(self, model_dict, threshold=None):
+        """
+        Tests lots of different models over different splits.
+        """
+        collection = ResultCollection()
+        for name, models in model_dict.items():
+            results = self._test(*models, threshold=threshold)
+            this_collection = ResultCollection.from_stack(results)
+            collection.join(name, this_collection)
 
         return collection
 

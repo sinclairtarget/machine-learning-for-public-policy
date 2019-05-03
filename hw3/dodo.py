@@ -21,3 +21,13 @@ def task_generate_analysis_notebook():
         'actions': ['pipenv run jupytext --to notebook analysis.md'],
         'clean': True                   # Remove all targets
     }
+
+
+def task_generate_report():
+    """Generates PDF report from markdown source."""
+    return {
+        'file_dep': ['report.md'],
+        'targets': ['report.pdf'],
+        'actions': ['pandoc -t latex -o report.pdf report.md'],
+        'clean': True
+    }

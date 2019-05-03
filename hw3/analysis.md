@@ -299,7 +299,7 @@ for n_trees in [10, 50, 100]:
 forest_results.df
 ```
 ```python
-forest_results.plot_statistic('f1')
+#forest_results.plot_statistic('f1')
 ```
 
 Around 50 trees seems to be the best option.
@@ -318,10 +318,29 @@ for n_estimators in [10, 50, 100]:
 bagging_results.df
 ```
 ```python
-bagging_results.plot_statistic('f1')
+#bagging_results.plot_statistic('f1')
 ```
 
 About 100 estimators looks ideal.
+
+#### Boosting
+For the boosting approach, we again need to decide on the number of base
+estimators.
+
+```python
+boosting_results = ResultCollection()
+
+for n_estimators in [10, 50, 100]:
+    models = trainer.boosting(n_estimators=n_estimators)
+    boosting_results.join('n_' + str(n_estimators), tester.test(*models))
+
+boosting_results.df
+```
+```python
+#boosting_results.plot_statistic('f1')
+```
+
+Again, about 100 estimators looks ideal.
 
 ## Evaluation
 Now that we are evaluating our models, we will want to use our final holdout
@@ -349,7 +368,8 @@ params = {
     'k_nearest': { 'k': 3 },
     'svm': { 'c': 1 },
     'forest': { 'n_trees': 50 },
-    'bagging': { 'n_estimators': 100 }
+    'bagging': { 'n_estimators': 100 },
+    'boosting': { 'n_estimators': 100 }
 }
 
 models = trainer.train_all(parameters=params)
@@ -361,19 +381,36 @@ results.plot_statistic('f1', xlabel='model')
 ```
 
 The above graph shows the F1 performance of our models with no threshold set.
+This graph suggests that using either a decision tree or bagging is the best
+approach.
 
-We also want to test using our thesholds:
+We also want to test using our thresholds:
 ```python
-threshold_results = tester.evaluate(models,
-                                    thresholds=[1, 2, 5, 10, 20, 30, 40, 50])
+threshold_results = \
+    tester.evaluate(models, thresholds=[1, 2, 5, 10, 20, 30, 40, 50])
 threshold_results.df
 ```
 ```python
-threshold_results.plot_statistic('f1', xlabel='threshold')
+threshold_results.plot_statistic('f1',
+                                 xlabel='threshold')
+```
+
+This graph suggests that the boosting and bagging models are pretty good
+overall. It is not clear to me why the logistic regression and linear svm
+models, which were worse than the dummy model before, are now better.
+
+We might also want to look at how our F1 metric breaks down into precision and
+recall over our thresholds:
+```python
+threshold_results.plot_statistic('precision',
+                                 xlabel='threshold')
 ```
 ```python
-threshold_results.plot_statistic('precision', xlabel='threshold')
+threshold_results.plot_statistic('recall',
+                                 xlabel='threshold')
 ```
-```python
-threshold_results.plot_statistic('recall', xlabel='threshold')
-```
+
+If we were targeting a specific threshold, then we would probably want to
+maximize precision instead of F1. In that case, the above graph showing
+precision would be important, and we might consider either the bagging or
+boosting model as the clear winner, depending on the threshold.
