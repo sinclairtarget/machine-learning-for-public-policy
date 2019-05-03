@@ -304,6 +304,25 @@ forest_results.plot_statistic('f1')
 
 Around 50 trees seems to be the best option.
 
+#### Bagging
+For the bagging approach, we need to decide on the number of base estimators to
+create, or alternatively the number of bootstrap samples to draw.
+
+```python
+bagging_results = ResultCollection()
+
+for n_estimators in [10, 50, 100]:
+    models = trainer.bagging(n_estimators=n_estimators)
+    bagging_results.join('n_' + str(n_estimators), tester.test(*models))
+
+bagging_results.df
+```
+```python
+bagging_results.plot_statistic('f1')
+```
+
+About 100 estimators looks ideal.
+
 ## Evaluation
 Now that we are evaluating our models, we will want to use our final holdout
 time split.
@@ -329,7 +348,8 @@ params = {
     'decision_tree': { 'max_depth': None },
     'k_nearest': { 'k': 3 },
     'svm': { 'c': 1 },
-    'forest': { 'n_trees': 50 }
+    'forest': { 'n_trees': 50 },
+    'bagging': { 'n_estimators': 100 }
 }
 
 models = trainer.train_all(parameters=params)

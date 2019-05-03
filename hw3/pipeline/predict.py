@@ -7,7 +7,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.svm import LinearSVC
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import RandomForestClassifier, BaggingClassifier
 from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import Pipeline
 from .result import PredictionResult, ResultCollection
@@ -108,6 +108,22 @@ class Trainer:
         return models if len(models) > 1 else models[0]
 
 
+    def bagging(self, n_estimators=10):
+        """
+        Returns bagging models fitted to the training data.
+
+        Underlying base estimator is a decision tree.
+        """
+        models = []
+        for X, y in self._training_data():
+            model = BaggingClassifier(n_estimators=n_estimators,
+                                      random_state=self.seed)
+            model.fit(X, y)
+            models.append(model)
+
+        return models if len(models) > 1 else models[0]
+
+
     def train_all(self, parameters={}, exclude=[]):
         """
         Train all the things.
@@ -120,7 +136,8 @@ class Trainer:
             'decision_tree': self.decision_tree,
             'k_nearest': self.k_nearest,
             'linear_svm': self.linear_svm,
-            'forest': self.forest
+            'forest': self.forest,
+            'bagging': self.bagging
         }
 
         models = dict()

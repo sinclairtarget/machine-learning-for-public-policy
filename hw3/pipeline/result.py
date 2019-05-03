@@ -130,6 +130,7 @@ class ResultCollection:
         stat_df.columns = self.suffixes
 
         if len(stat_df.index) > 1:
+            plt.figure(figsize=(6, 6))
             for suffix in self.suffixes:
                 plt.plot([str(x) for x in stat_df.index.values],
                          stat_df[suffix].values,
