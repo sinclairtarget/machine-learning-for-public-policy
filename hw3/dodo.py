@@ -7,7 +7,8 @@ def task_generate_analysis_html():
     return {
         'file_dep': ['analysis.ipynb'],
         'targets': ['analysis.html'],
-        'actions': ['pipenv run jupyter nbconvert --execute --to html analysis.ipynb'],
+        'actions': ['pipenv run jupyter nbconvert --execute --to html'
+                    ' --ExecutePreprocessor.timeout=360 analysis.ipynb'],
         'clean': True
     }
 
