@@ -273,7 +273,7 @@ for n_trees in [10, 50, 100]:
 forest_results.df
 ```
 ```python
-#forest_results.plot_statistic('f1')
+forest_results.plot_statistic('f1')
 ```
 
 Around 50 trees seems to be the best option.
@@ -292,7 +292,7 @@ for n_estimators in [10, 50, 100]:
 bagging_results.df
 ```
 ```python
-#bagging_results.plot_statistic('f1')
+bagging_results.plot_statistic('f1')
 ```
 
 About 100 estimators looks ideal.
@@ -311,7 +311,7 @@ for n_estimators in [10, 50, 100]:
 boosting_results.df
 ```
 ```python
-#boosting_results.plot_statistic('f1')
+boosting_results.plot_statistic('f1')
 ```
 
 Again, about 100 estimators looks ideal.
