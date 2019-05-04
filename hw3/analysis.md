@@ -28,16 +28,21 @@ need of additional visibilty.
 Since both precision and recall are important, we will focus on **F1 score** as
 our evaluation metric.
 
-## Data Cleaning
+## Environment Setup
 ```python
 import pandas as pd
 import pipeline
+from pipeline import Trainer, Tester, ResultCollection
+import cleaner
+
+pipeline.notebook.set_up()
 
 SEED = 1234
 
 df = pipeline.read_csv('projects_2012_2013.csv')
 ```
 
+## Data Cleaning
 ### Remove Unnecessary Columns
 First we remove any columns that contain a unique value for every row. These
 columns will not be useful as features.
@@ -53,15 +58,10 @@ Finally, we also drop all columns that contain geographic information other
 than the longitude and latitude columns.
 
 ```python
-df = df.drop(columns=['projectid',
-                      'teacher_acctid',
-                      'schoolid',
-                      'school_ncesid',
-                      'school_city',
-                      'school_state',
-                      'school_metro',
-                      'school_district',
-                      'school_county'])
+%psource cleaner.unnecessary_columns
+```
+```python
+df = cleaner.unnecessary_columns(df)
 ```
 
 ### Fix Types
@@ -76,19 +76,13 @@ These are all the implicitly binary columns:
 pipeline.binary_columns(df)
 ```
 
-We convert all of them to explicit binary columns:
+We convert all of them to explicit binary columns. The date columns should also
+be parsed into datetime objects.
 ```python
-for colname in ['school_charter',
-                'school_magnet',
-                'eligible_double_your_impact_match']:
-    df[colname] = (df[colname] == 't').astype(float)
+%psource cleaner.fix_types
 ```
-
-The date columns should also be parsed into datetime objects.
 ```python
-format = '%m/%d/%y'
-df['date_posted'] = pd.to_datetime(df['date_posted'], format=format)
-df['datefullyfunded'] = pd.to_datetime(df['datefullyfunded'], format=format)
+df = cleaner.fix_types(df)
 ```
 
 ### Handle Missing Data
@@ -103,15 +97,13 @@ pipeline.plot_missing(df, *missing)
 ```
 
 Given the large amount of missing data for both the `secondary_focus_subject`
-and `secondary_focus_area` columns, we drop them:
+and `secondary_focus_area` columns, we drop them. We then drop all remaining
+rows with missing data, since there are so few.
 ```python
-df = df.drop(columns=['secondary_focus_subject',
-                      'secondary_focus_area'])
+%psource cleaner.handle_missing
 ```
-
-We then drop all remaining rows with missing data, since there are so few.
 ```python
-df = df.dropna()
+df = cleaner.handle_missing(df)
 ```
 
 ### Handle Categorical Variables
@@ -119,42 +111,21 @@ We need to convert our categorical variables into a collection of binary dummy
 variables.
 
 ```python
-pipeline.dummify(df, 'teacher_prefix',
-                     'primary_focus_subject',
-                     'primary_focus_area',
-                     'resource_type',
-                     'poverty_level',
-                     'grade_level')
-df = df.drop(columns=['teacher_prefix',
-                      'primary_focus_subject',
-                      'primary_focus_area',
-                      'resource_type',
-                      'poverty_level',
-                      'grade_level'])
+%psource cleaner.handle_categorical
+```
+```python
+df = cleaner.handle_categorical(df)
 ```
 
 ### Label Data
-Finally, we need to label our data.
+Finally, we need to label our data. We also need to sort it in order of
+`date_posted` and drop our date columns.
 
 ```python
-label_colname = 'not_funded_in_60_days'
-df[label_colname] = (
-    (df.datefullyfunded - df.date_posted)
-    .apply(lambda d: d.days > 60)
-    .astype(float)
-)
+%psource cleaner.label
 ```
-
-We also need to sort it in order of `date_posted`:
 ```python
-df = df.sort_values('date_posted')
-df = df.reset_index(drop=True)
-```
-
-We can now drop our date columns:
-```python
-df = df.drop(columns=['date_posted',
-                      'datefullyfunded'])
+df = cleaner.label(df)
 ```
 
 Our final dataframe looks like the following:
@@ -203,8 +174,6 @@ dfs_test = [df_test for _, df_test in validation_splits]
     for i, df_test in enumerate(dfs_test, 1)]
 ```
 ```python
-from pipeline import Trainer, Tester
-
 trainer = Trainer(*dfs_train, label_colname=label_colname, seed=SEED)
 tester = Tester(*dfs_test, label_colname=label_colname)
 ```
@@ -214,8 +183,6 @@ For our logistic regression model, we have to decide whether to use L1 or L2
 regularization.
 
 ```python
-from pipeline import ResultCollection
-
 lr_results = ResultCollection()
 lr_l1_models = trainer.logistic_regression(penalty='l1')
 lr_results.join('L1', tester.test(*lr_l1_models))
