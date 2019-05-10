@@ -53,8 +53,7 @@ def handle_categorical(df):
     return df
 
 
-def label(df):
-    label_colname = 'not_funded_in_60_days'
+def label(df, label_colname):
     df[label_colname] = (
         (df.datefullyfunded - df.date_posted)
         .apply(lambda d: d.days > 60)

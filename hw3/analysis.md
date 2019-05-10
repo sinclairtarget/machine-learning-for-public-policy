@@ -125,7 +125,8 @@ Finally, we need to label our data. We also need to sort it in order of
 %psource cleaner.label
 ```
 ```python
-df = cleaner.label(df)
+label_colname = 'not_funded_in_60_days'
+df = cleaner.label(df, label_colname)
 ```
 
 Our final dataframe looks like the following:
