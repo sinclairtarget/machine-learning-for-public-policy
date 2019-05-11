@@ -1,0 +1,13 @@
+require 'rake/clean'
+
+SOURCE_FILE = 'answers.tex'
+OUTPUT_FILE = 'answers.pdf'
+
+task :default => [:render]
+
+desc 'Convert .tex file to pdf.'
+task :render => [SOURCE_FILE] do |t|
+  sh "lualatex #{t.source}"
+end
+CLEAN.include('*.aux', '*.log')
+CLOBBER.include(OUTPUT_FILE)

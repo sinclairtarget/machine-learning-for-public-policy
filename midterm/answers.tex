@@ -1,0 +1,552 @@
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage[letterpaper]{geometry}
+
+\title{Machine Learning for Public Policy \\ Midterm Assignment \\ Answers}
+\author{Sinclair Target}
+
+\begin{document}
+\maketitle
+
+\section*{Section A: Short Answers}
+\begin{enumerate}
+    \item \textit{You're asked to predict the probability that the unemployment
+        rate will go down next quarter for each of the neighborhoods in
+        Chicago. Which model would you prefer to use?}
+
+        \begin{enumerate}
+            \item \textit{Logistic Regression}
+            \item \textit{Support Vector Machines}
+        \end{enumerate}
+
+        \textit{Why?}
+
+        I would prefer to use logistic regression.
+
+        The models are similar, and depending on the parameters used will
+        likely have similar performance. That said, logistic regression gives
+        us a probability, whereas the SVM method typically will give us only a
+        score and not a probability.
+
+        We will have an easier time explaining the output of our model if we
+        rely on logistic regression.
+
+    \item \textit{Do you have to do anything special with the data or features
+        for this problem with the model you chose in \#1?}
+
+        Yes, we should scale our features by standardizing them based on the
+        mean and variance for that feature. This is necessary with logistic
+        regression when regularization is used.
+
+    \item \textit{What is the training error (error on the training set) for a
+        1-NN classifier?}
+
+        A 1-NN classifier is a nearest-neighbor classifier where $k$ is equal
+        to 1. This means that only the nearest neighbor is consulted when
+        trying to predict the class of a new sample.
+
+        When only one nearest neighbor is consulted, then the assigned class
+        will just be the the assigned class of the nearest neighbor, since we
+        don't need to worry about voting or average the results.
+
+        If you were to use a model trained on a given dataset to then predict
+        outcomes on that same dataset, the nearest neighbor for each test
+        sample would just be that same sample from the training set. The
+        predicted class would therefore be the same as the training set class.
+
+        This means that the training error will be zero. The model perfectly
+        memorizes the training set.
+
+    \item \textit{What is the leave-one-out cross validation error for
+        k-nearest neighbor on the following dataset? List any assumptions you
+        may be making.}
+
+        First, I assume that the distance function used here is Euclidean
+        distance. I also assume that for $k > 1$ the predicted class is
+        determined by majority vote among the selected neighbors.
+
+        \begin{enumerate}
+            \item \textit{For $k = 1$:}
+
+                The error is zero. The nearest neighbor for every point is a
+                point with the same class.
+
+            \item \textit{For $k = 3$:}
+
+                Only one of the five points is classified correctly. For the
+                remaining points, two of the three nearest neighbors are always
+                of the wrong class.
+
+                80\% of the samples were thus classified incorrectly.
+        \end{enumerate}
+
+    \item \textit{Which of the following classifiers are appropriate to use for
+        the following dataset? Why?}
+
+        \begin{enumerate}
+            \item \textit{Logistic Regression}
+            \item \textit{Decision Trees}
+            \item \textit{SVMs}
+        \end{enumerate}
+
+        A decision tree is appropriate to use on this data. A decision tree
+        draws perpendicular divsions between the samples. In this case, a tree
+        with only two levels would be sufficient to model this dataset, which
+        naturally seems to involve clustering in quadrants.
+
+        Neither a logistic regression model nor an SVM model seems appropriate
+        here. Both of these models partition the sample space using a single
+        line, but in this case it is not possible to draw a line that divides
+        the sample space so that like samples are grouped.
+
+    \item \textit{You are being asked to build a model to predict which
+        children in Chicago are at risk of asthma attacks. You create 1000
+        features (all continuous) but you find out after exploring the data and
+        talking to public health and medical experts that ~10 of them are
+        useful and relevant for the prediction problem. Which of the
+        classifiers below would you choose? And why?}
+
+        \begin{enumerate}
+            \item \textit{K-NN}
+            \item \textit{Decision Trees}
+        \end{enumerate}
+
+        Assuming I kept the extraneous features in the dataset and did not
+        simply discard them, I would choose to use decision trees as my model
+        and not K-NN.
+
+        The nearest neighbor method does not handle lots of irrelevant features
+        well, because it typically takes all features into account when
+        computing distance. Decision trees, on the other hand, will prioritize
+        splitting on the most informative features.
+
+    \item \textit{Does Boosting give you a linear classifier? Why or why not?}
+
+        Boosting does not give you a linear classifier. If you begin with a
+        linear classifier and then boost it, you end up with a decision
+        boundary that could be described by a piecewise function but not a
+        single linear function. (The decision boundary is not a straight line.)
+
+    \item \textit{Can boosting perfectly classify all the training samples for
+        any given dataset? Why or why not?}
+
+        No, certain combinations of underlying model and dataset might mean
+        that boosting cannot perfectly classify all the training samples. For
+        example, if the underlying model were a linear classifier, a boosted
+        approach would not be able to correctly classify all the training
+        samples in the dataset from question 5. It would not be able to
+        improve by focusing on the misclassified samples.
+
+    \item \textit{You have a dataset with 10 variables, each of them binary,
+        with a binary target variable (label). You are asked to build a
+        decision tree. If you didn't use a greedy approach and built all
+        possible trees on this dataset (without pruning or limiting the
+        depth), how many trees would you build?}
+
+        Since we only have binary features, when a tree splits on a particular
+        feature, it cannot split on that feature again.
+
+        Any tree we build therefore can only split a maximum of 10 times.
+
+        This question is equivalent to asking how many ways we can order our 10
+        features. This is given by $10 * 9 * 8 * \cdots * 2 * 1$ or $10!$,
+        which is 3,628,800.
+
+    \item \textit{You are reading a paper for a new method to identify people
+        at risk of pre-term and adverse births. The reported accuracy is 89.4\%
+        and the precision at the top 10\% is 56\%. Are those numbers high
+        enough to justify you replicating the method in your project?}
+
+        Maybe. It depends on the prevalence of pre-term and adverse births in
+        the population. If only 1\% of the population is at risk of pre-term
+        and adverse births, then the reported accuracy of 89.4\% is not
+        impressive and the precision at the top 10\% is not very meaningful.
+
+    \item \textit{A random forest will always perform better than a decision
+        tree on the same dataset.}
+
+        False. The random forest approach introduces more randomness into the
+        modeling step in an attempt to reduce variation. Bootstrap samples are
+        used and random subsets of the available features are used. This might
+        improve the generalizability of the model but it does not guarantee
+        that the final model will perform better than a simple decision tree on
+        one test set.
+
+    \item \textit{You need to build a model to predict re-entry into a social
+        service program. A colleague suggests building a separate model for
+        males and females while another colleague insists that you just need to
+        build one combined model.}
+
+        \textit{When will separate models be more appropriate?}
+
+        Separate models would be more appropriate when the distribution of the
+        samples in the sample space differs greatly depending on whether a
+        sample is for a male or a female. For example, if the female samples
+        are easily separated with a linear classifier while the male samples
+        are distributed into quadrants resembling the pattern in question 5,
+        then two separate models are likely to do better than a single model.
+
+    \item \textit{When will a combined model be more appropriate?}
+
+        When there is not a big difference in the distribution for males and
+        females, then a combined model would make more sense. Conceptually, if
+        you think men and women act similarly when it comes to re-entry, then
+        you should use one model.
+
+    \item \textit{What are the pros and cons of each approach?}
+
+        If you have separate models, you may be able to produce more accurate
+        predictions, especially if there is an underlying difference in what
+        determines whether a man or a woman re-enters the program. But by
+        producing multiple models you reduce the size of your training sets. If
+        there is no important underlying difference in what determines whether
+        a man or a woman re-enters the program, then you have thrown away lots
+        of your training data for no good reason.
+
+        There are also equity issues here. If you have many fewer women in your
+        dataset than men, then creating two models might mean that the
+        predictions for women are much worse (since there is so much less
+        training data for that model).
+
+    \item \textit{What is your opinion on how to proceed?}
+
+        The only way to make the decision is to spend more time exploring the
+        data. A good first thing to look for might be whether re-entry rates
+        differ greatly between men and women.
+
+        You could also construct a decision tree for men and a decision tree
+        for women and see if the two trees differ greatly in the features that
+        they consider. If they do, that's a good clue that separate models
+        would be appropriate.
+
+        Ultimately you may have to take both approaches and evaluate them at
+        the end to see which approach produces the results you are looking for.
+\end{enumerate}
+
+\section*{Section B}
+\begin{enumerate}
+    \item \textbf{Decision Trees}
+        \begin{enumerate}
+            \item \textit{What will be the random baseline accuracy for this
+                dataset?}
+
+                There are six ``High" energy consumption samples and four
+                ``Low" energy consumption samples. So our prior is that 60\% of
+                our samples should be labeled ``High" energy consumption.
+
+                If we \textit{randomly} assign a ``High" energy consumption
+                prediction to 60\% of the samples and a ``Low" energy
+                consumption prediction to the remainder, then our accuracy
+                would be given by:
+
+                \begin{align*}
+                    P(predict ``High") * P(``High") + P(predict ``Low") * P(``Low")
+                    &= \\
+                    0.6 * 0.6 + 0.4 * 0.4 &= \\
+                    0.52
+                \end{align*}
+
+                But a better baseline here might just be a ``majority
+                classifier" that assigns all samples a ``High" prediction. This
+                classifier would have an accuracy of 60\%.
+
+            \item \textit{Calculate the entropy for the target variable,
+                EnergyConsumption.}
+
+                The entropy is given by:
+                \begin{align*}
+                    entropy & = - (0.6 * \text{log}_2(0.6) + 0.4 * \text{log}_2(0.4)) \\
+                    & = -(-0.97) \\
+                    & = 0.97
+                \end{align*}
+
+            \item \textit{Now calculate the Information Gain if you do a split
+                on the feature ``Home Insulation.''}
+
+                A split on ``Home Insulation'' would create two children nodes.
+
+                The node containing all the samples where ``Home Insulation''
+                is equal to ``Excellent'' will have two ``High'' energy
+                consumption samples and three ``Low'' energy consumption
+                samples. The entropy of the node is given by:
+                \begin{align*}
+                    entropy & = - (0.4 * \text{log}_2(0.4) + 0.6 * \text{log}_2(0.6)) \\
+                    & = -(-0.97) \\
+                    & = 0.97
+                \end{align*}
+
+                This happens to be the same entropy as our complete set.
+
+                The node containing all the samples where ``Home Insulation''
+                is equal to ``Poor'' will have four ``High'' energy consumption
+                samples and one ``Low'' energy consumption sample. The entropy
+                of the node is given by:
+                \begin{align*}
+                    entropy & = - (0.8 * \text{log}_2(0.8) + 0.2 * \text{log}_2(0.2)) \\
+                    & = - (-0.72) \\
+                    & = 0.72
+                \end{align*}
+
+                The total information gain is the difference between the
+                entropy of the parent node and the weighted sum of the two
+                entropy values for the child nodes:
+                \begin{align*}
+                    gain & = 0.97 - \left(0.5(0.97) + 0.5(0.72)\right) \\
+                    & = 0.97 - 0.854 \\
+                    & = 0.125
+                \end{align*}
+
+            \item \textit{Using the data above, construct a two-level decision
+                tree that can be used to predict Energy Consumption. Don't
+                worry about overfitting or pruning. You can use a simple
+                algorithm such as ID3 (using information gain as the splitting
+                criterion).}
+
+                \textbf{First Level}
+
+                First we must determine which feature to split on for the first
+                level of the tree.
+
+                We have already determined that splitting on ``Home
+                Insulation'' yields an information gain of 0.125.
+
+                If we split on ``Temperature'', we get three children. The
+                child where temperature is equal to ``Cool'' has five samples,
+                two ``Low'' and three ``High.'' The entropy of this node is,
+                as we've calculated before, 0.97.
+
+                The child where temperature is equal to ``Mild'' has two
+                samples, both of which are ``High''. The entropy of this node
+                is given by:
+                \begin{align*}
+                    entropy & = - (1 * \text{log}_2(1) + 0) \\
+                            & = 0
+                \end{align*}
+
+                The child where temperature is equal to ``Hot'' has three
+                samples, two ``Low'' and one ``High.'' The entropy is given by:
+                \begin{align*}
+                    entropy & = - (0.33 * \text{log}_2(0.33) + 0.66 * \text{log}_2(0.66)) \\
+                    & = 0.92
+                \end{align*}
+
+                The information gain for splitting on ``Temperature'' is thus:
+                \begin{align*}
+                    gain &= 0.97 - \left(0.5(0.97) + 0.2(0) + 0.3(0.92)\right) \\
+                    & = 0.97 - 0.761 \\
+                    & = 0.209
+                \end{align*}
+
+                If we split on ``HomeSize,'' we will again have three children
+                nodes. The child where home size is equal to ``Small'' has two
+                ``High'' and one ``Low.'' The entropy is, as we've calculated
+                before, 0.92.
+
+                The child where home size is equal to ``Medium'' has three
+                ``High'' and two ``Low.'' So, as we've calculated before, this
+                node has an entropy of 0.97.
+
+                The child where home size is equal to ``Large'' has one low and
+                one high. The entropy will be 1.
+
+                Our information gain for splitting on ``HomeSize'' is given by:
+                \begin{align*}
+                    gain &= 0.97 - \left(0.3(0.92) + 0.5(0.97) + 0.2(1)\right) \\
+                    & = 0.97 - 0.96 \\
+                    & = 0.01
+                \end{align*}
+
+                We should therefore split first on ``Temperature.'' We now have
+                three nodes on the first level of our tree.
+
+                \textbf{Second Level}
+
+                The ``Cool'' node, as we previously calculated, has an entropy
+                of 0.97. We can now split on ``HomeInsulation'' or
+                ``HomeSize.'' If we split on home insulation, we get two
+                children.
+
+                The child node where home insulation is ``Poor'' has two
+                ``High'' samples. So its entropy is 0.
+
+                The child node where home insulation is ``Excellent'' has two
+                ``Low'' and one ``High.'' As we know, this means the node has
+                entropy of 0.92.
+
+                The information gain for splitting on ``HomeInsulation'' is
+                thus:
+                \begin{align*}
+                    gain &= 0.97 - \left(0.4(0) + 0.6(0.92)\right) \\
+                    &= 0.97 - 0.552 \\
+                    &= 0.418
+                \end{align*}
+
+                If we instead split on ``HomeSize,'' we will get three
+                children. The child where home size is equal to ``Small'' has
+                one ``High'' sample. So the entropy will be 0.
+
+                The child where home size is equal to ``Medium'' has two
+                ``High'' and one ``Low,'' so it has an entropy of 0.92.
+
+                The child where home size is equal to ``Large'' has one
+                ``Low,'' so the entropy is 0.
+
+                The information gain for splitting on ``HomeSize'' is thus:
+                \begin{align*}
+                    gain &= 0.97 - \left(0.2(0) + 0.6(0.92) + 0.2(0)\right) \\
+                    &= 0.97 - 0.552 \\
+                    &= 0.418
+                \end{align*}
+
+                So in the ``Cool'' subtree we find a tie. We can randomly
+                pick—let's say we split on ``HomeInsulation.''
+
+                We must now look at ``Mild'' subtree. This node already has an
+                entropy of 0, so there is no information to be gained by
+                splitting any further. Entropy cannot be reduced.
+
+                We now look at the final ``Hot'' subtree. This node has entropy
+                of 0.92.
+
+                If we split on home insulation, we get two children.
+
+                The child node where home insulation is ``Poor'' has only one
+                sample, so the entropy is 0.
+
+                The child node where home insulation is ``Excellent'' has one
+                ``High'' and one ``Low,'' so the entropy is 1.
+
+                The information gain from splitting on ``HomeInsulation'' is
+                thus:
+                \begin{align*}
+                    gain &= 0.92 - \left(0.33(0) + 0.66(1)\right) \\
+                    &= 0.92 - 0.66 \\
+                    &= 0.26
+                \end{align*}
+
+                If we split instead on home size, we get three children. All
+                children have only one sample, meaning all children have
+                entropy of 0. The information gain is:
+                \begin{align*}
+                    gain &= 0.92 - \left(0.33(0) + 0.33(0) + 0.33(0)\right) \\
+                    &= 0.92 - 0 \\
+                    &= 0.92
+                \end{align*}
+
+                So in this subtree we choose to split on ``HomeSize.''
+
+                Below is the final tree, showing splits and information gain in
+                parentheses.
+
+                \begin{itemize}
+                    \item Root, Split on Temperature ($0.209 \ge 0.125, 0.01$)
+                        \begin{itemize}
+                            \item Cold, Split on HomeInsulation ($0.418 \ge 0.418$)
+                                \begin{itemize}
+                                    \item Poor
+                                    \item Excellent
+                                \end{itemize}
+
+                            \item Mild
+
+                            \item Hot, Split on HomeSize ($0.92 \ge 0.26$)
+                                \begin{itemize}
+                                    \item Small
+                                    \item Medium
+                                    \item Large
+                                \end{itemize}
+                        \end{itemize}
+                \end{itemize}
+        \end{enumerate}
+
+    \item \textbf{Evaluation 1}
+        \begin{enumerate}
+            \item \textit{What is the accuracy of the SVM on this set? You will
+                need to make some assumptions here. Be very explicit about your
+                assumptions.}
+
+                Our models give us a probability score and not a binary
+                prediction. So we need to decide on a threshold to generate a
+                prediction ourselves.
+
+                In the absence of other information, we can choose 0.5 as our
+                threshold (see table).
+
+                \begin{table}[h!]
+                \begin{tabular}{r|r|r|r|r|r}
+                    ID & Probability (SVM) & Predict (SVM) & Probability (Log)
+                    & Predict (Log) & True Label \\
+                    \hline
+                    1 & 0.98 & 1 & 0.85 & 1 & 1 \\
+                    2 & 0.2 & 0 & 0.3 & 0 & 0 \\
+                    3 & 0.1 & 0 & 0.22 & 0 & 0 \\
+                    4 & 0.99 & 1 & 0.9 & 1 & 1 \\
+                    5 & 0.55 & 1 & 0.4 & 0 & 0 \\
+                    6 & 0.05 & 0 & 0.2 & 0 & 0 \\
+                    7 & 0.4 & 0 & 0.1 & 0 & 1 \\
+                    8 & 0.35 & 0 & 0.35 & 0 & 0 \\
+                    9 & 0.65 & 1 & 0.81 & 1 & 0 \\
+                    10 & 0.75 & 1 & 0.5 & 1 & 1 \\
+                \end{tabular}
+                \end{table}
+
+                The SVM is mis-predicts on three of the samples. So it has an
+                accuracy of 70\% (assuming a threshold of 0.5).
+        \end{enumerate}
+
+    \item \textbf{Evaluation 2}
+        \begin{enumerate}
+            \item \textit{How would you explain what's happening at the
+                beginning of the graph to someone who's not a machine learning
+                expert?}
+
+                The x-axis shows us the change in the percent of population
+                that gets a prediction of ``1'' based on the score assigned by
+                our model. As the x-axis increases toward 1, the precision
+                levels off at about 0.25, suggesting that in this dataset the
+                true number of ``1''-labeled samples is 25\%.
+
+                The precision is extremely low toward the other end of the
+                x-axis. What this tells us is that the model has for some
+                reason given lots of samples that should not be predicted as a
+                ``1'' a very high score. In other words, the highest scoring
+                samples as scored by the algorithm are all samples that should
+                be predicted as a 0. But precision improves once we get to
+                samples that do not score quite as high, suggesting this is
+                only a problem for some $n$ highest-scoring samples.
+
+            \item \textit{What could be the reason for that behavior?}
+
+                It could be that some collection of $n$ samples that should be
+                predicted as a ``0'' for some reason share a lot of features
+                with the bulk of samples that are labeled as a ``1''. This is
+                strange though, because the model has ranked these samples
+                above even the other samples that truly were ``1'' samples.
+
+                It is possible that some training data has been mislabeled. It
+                is also possible that there has been some big change between
+                the training data and the test data that the model has not been
+                able to account for.
+
+                At a high level, this seems to be a failure of generalization.
+                There is a quirk in the training data that is not replicated in
+                the test data.
+
+            \item \textit{What would you do to improve the performance of the
+                classifier at the top 5\%?}
+
+                Since we seem to be running into a generalizability problem, I
+                would try to employ techniques that reduce the variance of my
+                model. For example, I would probably use bagging to try to
+                reduce the variance. The bootstrap samples should help iron out
+                the kink in the training data that is causing this problem.
+        \end{enumerate}
+
+    \item \textbf{Evaluation 4}
+        \begin{enumerate}
+            \item \textit{What can you say about the behavior of Logistic
+                Regression as you vary the parameters?}
+        \end{enumerate}
+\end{enumerate}
+
+\end{document}
