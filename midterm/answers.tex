@@ -1,5 +1,6 @@
-\documentclass{article}
+\documentclass[11pt]{article}
 \usepackage{amsmath}
+\usepackage{graphicx}
 \usepackage[letterpaper]{geometry}
 
 \title{Machine Learning for Public Policy \\ Midterm Assignment \\ Answers}
@@ -90,7 +91,7 @@
         \end{enumerate}
 
         A decision tree is appropriate to use on this data. A decision tree
-        draws perpendicular divsions between the samples. In this case, a tree
+        draws perpendicular divisions between the samples. In this case, a tree
         with only two levels would be sufficient to model this dataset, which
         naturally seems to involve clustering in quadrants.
 
@@ -124,7 +125,7 @@
 
         Boosting does not give you a linear classifier. If you begin with a
         linear classifier and then boost it, you end up with a decision
-        boundary that could be described by a piecewise function but not a
+        boundary that could be described by a piece-wise function but not a
         single linear function. (The decision boundary is not a straight line.)
 
     \item \textit{Can boosting perfectly classify all the training samples for
@@ -230,7 +231,7 @@
             \item \textit{What will be the random baseline accuracy for this
                 dataset?}
 
-                There are six ``High" energy consumption samples and four
+                There are six ``High'' energy consumption samples and four
                 ``Low" energy consumption samples. So our prior is that 60\% of
                 our samples should be labeled ``High" energy consumption.
 
@@ -298,7 +299,7 @@
 
             \item \textit{Using the data above, construct a two-level decision
                 tree that can be used to predict Energy Consumption. Don't
-                worry about overfitting or pruning. You can use a simple
+                worry about over-fitting or pruning. You can use a simple
                 algorithm such as ID3 (using information gain as the splitting
                 criterion).}
 
@@ -399,7 +400,7 @@
                 \end{align*}
 
                 So in the ``Cool'' subtree we find a tie. We can randomly
-                pick—let's say we split on ``HomeInsulation.''
+                pick---let's say we split on ``HomeInsulation.''
 
                 We must now look at ``Mild'' subtree. This node already has an
                 entropy of 0, so there is no information to be gained by
@@ -438,6 +439,7 @@
                 Below is the final tree, showing splits and information gain in
                 parentheses.
 
+                \newpage
                 \begin{itemize}
                     \item Root, Split on Temperature ($0.209 \ge 0.125, 0.01$)
                         \begin{itemize}
@@ -490,8 +492,32 @@
                 \end{tabular}
                 \end{table}
 
-                The SVM is mis-predicts on three of the samples. So it has an
+                The SVM mis-predicts on three of the samples. So it has an
                 accuracy of 70\% (assuming a threshold of 0.5).
+
+            \item \textit{Plot the precision recall curves for both classifiers
+                based on these predictions.}
+
+                \begin{center}
+                    \includegraphics[width=3.75in, height=3.75in]{svm}
+
+                    \includegraphics[width=3.75in, height=3.75in]{logit}
+                \end{center}
+
+            \item \textit{Which classifier is better? (Again, list the
+                assumptions you're making.)}
+
+                Typically, we would want to know more about the problem we are
+                trying to solve before deciding that one model is ``better''
+                than another. For example, without picking a threshold and
+                deciding whether to prioritize precision or recall,
+                precision-recall plots like the ones above can't usually tell
+                you which model is better.
+
+                In this case, however, one model is better than the other model
+                for both metrics no matter the threshold. So unless we care
+                about some other model feature such as stability, we should go
+                with the SVM model.
         \end{enumerate}
 
     \item \textbf{Evaluation 2}
@@ -542,11 +568,181 @@
                 the kink in the training data that is causing this problem.
         \end{enumerate}
 
-    \item \textbf{Evaluation 4}
+    \item \textbf{Evaluation 3}
         \begin{enumerate}
             \item \textit{What can you say about the behavior of Logistic
                 Regression as you vary the parameters?}
+
+                The precision appears to change by quite a lot depending on the
+                regularization technique employed and the regularization
+                strength. But it is worth pointing out that no one set of
+                parameters completely dominates at all thresholds, so it will
+                be important to consider the intervention resources available
+                before picking a model.
+
+            \item \textit{Which specific model would you select to deploy (and
+                why) going forward if:}
+                \begin{enumerate}
+                    \item \textit{your goal was to prioritize 5\% highest risk
+                        population to intervene with?}
+
+                        Assuming that precision is the metric you care about
+                        (as opposed to, say, recall), then we want to pick the
+                        model with the best recall at the 5\% threshold. So we
+                        could pick either of the logistic regression models
+                        with a precision at 5\% of 0.82. The model where $C
+                        =0.1$ has slightly better precision at other
+                        thresholds, so we might as well pick that one, since it
+                        will do better if for some reason the threshold
+                        changes.
+
+                    \item \textit{the resources available for interventions
+                        were yet to be determined?}
+
+                        If we did not yet know the resources available for
+                        intervention, then we also do not know the threshold to
+                        target. As a result, it might make sense to pick the
+                        logistic regression model where precision is 0.77 at
+                        5\% but 0.68 and 0.54 at 10\% and 20\% respectively.
+                        That model has the highest precision in two out three
+                        cases.
+                \end{enumerate}
+        \end{enumerate}
+
+    \item \textbf{Communicating your results}
+        \begin{enumerate}
+            \item \textit{How would you explain this to the school
+                administrator? Assume this administrator is a reasonable,
+                intelligent person with extensive school administration
+                experience and little or no background in statistics and
+                machine learning.}
+
+                How I explain Jenny's score really depends on the model that I
+                chose to employ to make my predictions. In the best case, I
+                would have used a k-nearest neighbor model. I would explain
+                that the model has taken a look at some of Jenny's
+                characteristics and matched her up with similar students that
+                the model knows about. About half of these similar students did
+                not graduate, which is why Jenny has received a score of 50 out
+                of 100.
+
+                I would emphasize two things: First, the model only sees a very
+                specific set of characteristics about Jenny and may not be able
+                to see some of the academic success that the administrator is
+                able to observe. Second, I would point out that the model score
+                of 50 out of 100 is not saying that Jenny is a middling student
+                that might either drop out of school or just barely stay in.
+                The students most similar to her in the dataset could have been
+                two complete dropouts and two valedictorians---her risk score
+                would still be 50 out of 100.
+
+            \item \textit{Then suggest a different way that the administrator
+                can confirm the accuracy of the predictive model you created.}
+
+                The best way to evaluate the model would of course be to wait
+                four years and see how many students that were given high risk
+                scores actually dropped out. In lieu of that, I would like to
+                write some code that could print out Jenny's nearest neighbors
+                in the dataset and show these students to the administrator.
+                Perhaps the administrator will remember these (potentially
+                troublesome) students and better appreciate why Jenny's
+                proximity to them raises her risk of dropping out.
         \end{enumerate}
 \end{enumerate}
 
+\section*{Section C: Solving a New Problem}
+\begin{enumerate}
+    \item \textit{How would you formulate this as a machine learning problem?
+        It it supervised learning or unsupervised learning? If it's the former,
+        what's the label? What is each row in your training data? How would you
+        get the training data?}
+
+        Let's say that we are trying to link two tables. (The resulting, linked
+        table could further be linked with other tables later if we have more
+        than one data source we want to combine.)
+
+        This is a supervised learning problem. The training and test sets come
+        from the Cartesian product of the two tables. Each row is thus a row
+        from the first table matched with a row from the second table. The
+        label for each row should be a 1 if the records match and a 0 if the
+        records don't.
+
+        The labeled rows, some used for training and others used for testing,
+        should be a random subset of the whole Cartesian product table. There
+        should be many, many more rows with 0 labels than 1 labels.
+
+        The labeling will be hard to do. You can use some heuristics to match
+        people based on fuzzy string matches and rules about birth dates, etc.
+        But you will also need to manually match some rows, otherwise the
+        machine learning algorithm will just learn your heuristics, which you
+        know are insufficient because you are trying to use a machine learning
+        algorithm instead.
+
+    \item \textit{What features would you create for this problem?}
+
+        You could use each of the columns in both tables as features. Even the
+        columns that are not shared could be useful features---perhaps
+        individuals with certain characteristics in the Department of Mental
+        Health database rarely show up in the Department of Corrections
+        database.
+
+        You could also generate features that are combinations of columns in
+        both tables. For example, we should definitely have a feature that is a
+        string distance score based on matching names from the two tables.
+
+    \item \textit{What models would you use?}
+
+        Everything I have learned so far in this class has taught me that
+        machine learning is all about trying a bunch of models and seeing which
+        one works best.
+
+        That said, I suspect that a nearest neighbor model would work best. In
+        a two-dimensional case, perhaps just using date of birth from both
+        tables, you can visualize how all the positive samples would be
+        clustered in a sloping line where the date of births are equal or very
+        close while the negative samples are further above and below this line.
+        Trying to model this relationship using a linear discriminant or a
+        decision tree would be hard, so a nearest neighbor approach seems
+        likely to work best.
+
+    \item \textit{What evaluation metric would you use? Be specific and
+        justify your choice.}
+
+        What you really do not want to do is match people with the wrong row,
+        because then all of your data becomes suspect. It is much less
+        important to match every single row, since you can still use the
+        records that you are able to match. (That said, you will have to think
+        carefully about whether there were systematic reasons that certain
+        records could not be matched and thus don't become a part of your final
+        dataset.)
+
+        Given that mistakes are costly, precision seems to be the best metric
+        to use. But we are not in a situation where we can only intervene in a
+        certain percentage of cases, so it does not make sense to pick a
+        threshold ahead of time. Instead, we should set a precision that we are
+        comfortable with, and then only ``intervene'' on (i.e. accept into our
+        final dataset) the top $x$ matched records as ranked by likelihood that
+        the match is a good one. This $x$ threshold follows from the precision
+        we choose to use and can be determined from our precision-recall
+        curves.
+
+    \item \textit{Would you expect the machine learning solution to work better
+        than exact matching or ``fuzzy'' / approximate matching rules? Why or
+        why not?}
+
+        If the algorithm is trained on data that has been manually labeled (at
+        least partially), then it will almost certainly do better. It can learn
+        all sorts of ``rules'' about matching that the heuristic will miss. But
+        it may be too time-consuming to do this matching.
+
+        If the algorithm is trained on a training set that has been labeled
+        using only a combination of fuzzy-matching heuristics and exact
+        matching, then its performance will not be much better, since the
+        algorithm can only really learn the rules that were used to generate
+        the labeled data. That said, the algorithm could pick up on additional
+        patterns based on columns not shared between the tables. For example,
+        it might discover/encode that people in a certain neighborhood rarely
+        match across the tables. But this may not contribute much to overall
+        performance.
+\end{enumerate}
 \end{document}
