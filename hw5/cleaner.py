@@ -35,18 +35,9 @@ def handle_missing(df):
 
 
 def handle_categorical(df):
-    pipeline.dummify(df, 'teacher_prefix',
-                         'primary_focus_subject',
-                         'primary_focus_area',
-                         'resource_type',
-                         'poverty_level',
-                         'grade_level')
-    df = df.drop(columns=['teacher_prefix',
-                          'primary_focus_subject',
-                          'primary_focus_area',
-                          'resource_type',
-                          'poverty_level',
-                          'grade_level'])
+    categorical_columns = pipeline.categorical_columns(df)
+    pipeline.dummify(df, *categorical_columns)
+    df = df.drop(columns=categorical_columns)
     return df
 
 

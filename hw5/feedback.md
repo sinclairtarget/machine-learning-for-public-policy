@@ -1,7 +1,7 @@
 # Feedback
 * [x] When calling read_csv, you could add the argument parse_dates=[] to avoid
   transforming the dates from string into datetime object later.
-* [ ] When creating dummy variables, you should not manually type in the names
+* [x] When creating dummy variables, you should not manually type in the names
   of columns. You should write a function to return a list of categorical
   variables.
 * [ ] You should discretize float variables like

@@ -112,6 +112,12 @@ df = cleaner.handle_missing(df)
 We need to convert our categorical variables into a collection of binary dummy
 variables.
 
+These are our categorical variables:
+```python
+pipeline.categorical_columns(df)
+```
+
+We convert them all to binary dummy variables:
 ```python
 %psource cleaner.handle_categorical
 ```
