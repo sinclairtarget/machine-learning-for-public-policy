@@ -275,7 +275,7 @@ For random forests, we need to decide on the number of trees to use.
 ```python
 forest_results = ResultCollection()
 
-for n_trees in [10, 50, 100]:
+for n_trees in [100, 500, 1200]:
     models = trainer.forest(n_trees=n_trees)
     forest_results.join('n_' + str(n_trees), tester.test(*models))
 
@@ -294,7 +294,7 @@ create, or alternatively the number of bootstrap samples to draw.
 ```python
 bagging_results = ResultCollection()
 
-for n_estimators in [10, 50, 100]:
+for n_estimators in [100, 500, 1200]:
     models = trainer.bagging(n_estimators=n_estimators)
     bagging_results.join('n_' + str(n_estimators), tester.test(*models))
 

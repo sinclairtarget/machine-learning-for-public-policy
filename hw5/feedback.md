@@ -20,7 +20,7 @@
   instead "L1" or "L2".
 * [x] The performance of SVM is suspicious, C should be chosen from [1,10,100]
   so on.
-* [ ] In random forest and bagging, the number of trees should be larger. 10 is
+* [x] In random forest and bagging, the number of trees should be larger. 10 is
   really small and doesn't make sense.
 * [ ] You should compare the AOC instead of F1 for different models. You should
   also plot precision vs recall curve.
