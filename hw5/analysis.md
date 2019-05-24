@@ -256,7 +256,7 @@ $c$, which is a penalty term that should be lower when we have noisy data.
 ```python
 svm_results = ResultCollection()
 
-for c in [0.6, 0.8, 1]:
+for c in [1, 10, 100]:
     models = trainer.linear_svm(c=c)
     svm_results.join('c_' + str(c), tester.test(*models))
 

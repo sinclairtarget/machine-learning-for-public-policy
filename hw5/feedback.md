@@ -18,7 +18,7 @@
   AOC would be a much better metric than f1 with default threshold.
 * [ ] For logistic regression, the parameter that you need to change is C
   instead "L1" or "L2".
-* [ ] The performance of SVM is suspicious, C should be chosen from [1,10,100]
+* [x] The performance of SVM is suspicious, C should be chosen from [1,10,100]
   so on.
 * [ ] In random forest and bagging, the number of trees should be larger. 10 is
   really small and doesn't make sense.
