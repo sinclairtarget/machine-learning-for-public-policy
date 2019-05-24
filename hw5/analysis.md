@@ -6,7 +6,7 @@ jupyter:
       extension: .md
       format_name: markdown
       format_version: '1.1'
-      jupytext_version: 1.1.1
+      jupytext_version: 1.1.3
   kernelspec:
     display_name: Python 3
     language: python
@@ -39,7 +39,10 @@ pipeline.notebook.set_up()
 
 SEED = 1234
 
-df = pipeline.read_csv('projects_2012_2013.csv')
+df = pipeline.read_csv('projects_2012_2013.csv',
+                       parse_dates=['date_posted', 'datefullyfunded'],
+                       infer_datetime_format=True)
+df.head()
 ```
 
 ## Data Cleaning
@@ -76,8 +79,7 @@ These are all the implicitly binary columns:
 pipeline.binary_columns(df)
 ```
 
-We convert all of them to explicit binary columns. The date columns should also
-be parsed into datetime objects.
+We convert all of them to explicit binary columns.
 ```python
 %psource cleaner.fix_types
 ```

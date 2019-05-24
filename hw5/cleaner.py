@@ -24,9 +24,6 @@ def fix_types(df):
                     'eligible_double_your_impact_match']:
         df[colname] = (df[colname] == 't').astype(float)
 
-    format = '%m/%d/%y'
-    df['date_posted'] = pd.to_datetime(df['date_posted'], format=format)
-    df['datefullyfunded'] = pd.to_datetime(df['datefullyfunded'], format=format)
     return df
 
 
