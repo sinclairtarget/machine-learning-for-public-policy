@@ -2,32 +2,44 @@ DOIT_CONFIG = {
     'default_tasks': ['generate_analysis_html']
 }
 
-def task_generate_analysis_html():
+def task_render():
     """Generates HTML Jupyter notebook file from notebook source."""
+    target = 'analysis.html'
+    dep = 'analysis.ipynb'
     return {
-        'file_dep': ['analysis.ipynb'],
-        'targets': ['analysis.html'],
-        'actions': ['pipenv run jupyter nbconvert --execute --to html'
-                    ' --ExecutePreprocessor.timeout=360 analysis.ipynb'],
+        'file_dep': [dep],
+        'targets': [target],
+        'actions': [
+            f"jupyter nbconvert --execute --to html {dep}"
+        ],
         'clean': True
     }
 
 
-def task_generate_analysis_notebook():
+def task_sync():
     """Generates Jupyter notebook from markdown source."""
+    target = 'analysis.ipynb'
+    dep = 'analysis.md'
     return {
-        'file_dep': ['analysis.md'],
-        'targets': ['analysis.ipynb'],
-        'actions': ['pipenv run jupytext --to notebook analysis.md'],
+        'file_dep': [dep],
+        'targets': [target],
+        'actions': [
+            f"jupytext --to notebook {dep}",
+            f"jupytext --set-format ipynb,md --sync {target}"
+        ],
         'clean': True                   # Remove all targets
     }
 
 
-def task_generate_report():
+def task_render_report():
     """Generates PDF report from markdown source."""
+    target = 'report.pdf'
+    dep = 'report.md'
     return {
-        'file_dep': ['report.md'],
-        'targets': ['report.pdf'],
-        'actions': ['pandoc -t latex -o report.pdf report.md'],
+        'file_dep': [dep],
+        'targets': [target],
+        'actions': [
+            f"pandoc -t latex -o {target} {dep}"
+        ],
         'clean': True
     }
