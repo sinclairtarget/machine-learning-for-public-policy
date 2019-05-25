@@ -125,6 +125,13 @@ class ResultCollection:
         self.suffixes.append(suffix)
 
 
+    def statistic(self, stat_name):
+        df = self.df.filter(regex=stat_name).transpose()
+        df.index = self.suffixes
+        df.columns = [f"split{i}" for i in range(1, len(self.df) + 1)]
+        return df
+
+
     def plot_statistic(self, stat_name, xlabel='split', filename=None):
         stat_df = self.df.filter(regex=stat_name)
         stat_df.columns = self.suffixes

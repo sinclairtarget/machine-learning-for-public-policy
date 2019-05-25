@@ -25,8 +25,7 @@ all projects get funded, but we might also only have limited room on our site
 landing page, so it is important that the projects we feature were really in
 need of additional visibilty.
 
-Since both precision and recall are important, we will focus on **F1 score** as
-our evaluation metric.
+We will focus on **AUC** as our evaluation metric when comparing models.
 
 ## Environment Setup
 ```python
@@ -161,6 +160,11 @@ posted.
 df.not_funded_in_60_days.value_counts(normalize=True)
 ```
 
+We can use this value later as our default threshold.
+```python
+default_threshold = 29
+```
+
 ## Parameter Selection
 ### Training Data
 We separate our data into a validation and a test set. The validation set will
@@ -193,24 +197,21 @@ tester = Tester(*dfs_test, label_colname=label_colname)
 ```
 
 #### Logistic Regression
-For our logistic regression model, we have to decide whether to use L1 or L2
-regularization.
+For our logistic regression model, we have to decide on a value for $c$:
 
 ```python
 lr_results = ResultCollection()
 
 for c in [1, 10, 100]:
     models = trainer.logistic_regression(c=c)
-    lr_results.join('c_' + str(c), tester.test(*models))
-
-lr_results.df
+    lr_results.join('c_' + str(c), tester.test(*models,
+                                               threshold=default_threshold))
 ```
 ```python
-lr_results.plot_statistic('f1')
+lr_results.statistic('auc')
 ```
 
-It looks like using L1 regression here is marginally better, though both models
-perform poorly.
+It looks like using $c = 1$ is the best here.
 
 #### Decision Tree
 For our decision tree model, we need to experiment with tree depth to see what
@@ -220,16 +221,18 @@ depth is best.
 tree_results = ResultCollection()
 
 tree_no_max_models = trainer.decision_tree(max_depth=None)
-tree_results.join('no_max', tester.test(*tree_no_max_models))
+tree_results.join('no_max', tester.test(*tree_no_max_models,
+                                        threshold=default_threshold))
 
 for max_depth in [6, 12, 24]:
     models = trainer.decision_tree(max_depth=max_depth)
-    tree_results.join(str(max_depth) + '_max', tester.test(*models))
+    tree_results.join(str(max_depth) + '_max', tester.test(*models,
+                                                           threshold=default_threshold))
 
 tree_results.df
 ```
 ```python
-tree_results.plot_statistic('f1')
+tree_results.statistic('auc')
 ```
 
 It looks like setting no max depth is appropriate here. The tree's depth is
@@ -244,12 +247,13 @@ k_nearest_results = ResultCollection()
 
 for k in [3, 6, 12, 24]:
     models = trainer.k_nearest(k=k)
-    k_nearest_results.join('k_' + str(k), tester.test(*models))
+    k_nearest_results.join('k_' + str(k), tester.test(*models,
+                                                      threshold=default_threshold))
 
 k_nearest_results.df
 ```
 ```python
-k_nearest_results.plot_statistic('f1')
+k_nearest_results.statistic('auc')
 ```
 
 It looks like we want to keep $k$ on the smaller side.
@@ -263,12 +267,13 @@ svm_results = ResultCollection()
 
 for c in [1, 10, 100]:
     models = trainer.linear_svm(c=c)
-    svm_results.join('c_' + str(c), tester.test(*models))
+    svm_results.join('c_' + str(c), tester.test(*models,
+                                                threshold=default_threshold))
 
 svm_results.df
 ```
 ```python
-svm_results.plot_statistic('f1')
+svm_results.statistic('auc')
 ```
 
 It looks like choosing $c$ doesn't make much of a difference, so we might as
@@ -282,12 +287,13 @@ forest_results = ResultCollection()
 
 for n_trees in [100, 500, 1200]:
     models = trainer.forest(n_trees=n_trees)
-    forest_results.join('n_' + str(n_trees), tester.test(*models))
+    forest_results.join('n_' + str(n_trees), tester.test(*models,
+                                                         threshold=default_threshold))
 
 forest_results.df
 ```
 ```python
-forest_results.plot_statistic('f1')
+forest_results.statistic('auc')
 ```
 
 Around 50 trees seems to be the best option.
@@ -301,12 +307,13 @@ bagging_results = ResultCollection()
 
 for n_estimators in [100, 500, 1200]:
     models = trainer.bagging(n_estimators=n_estimators)
-    bagging_results.join('n_' + str(n_estimators), tester.test(*models))
+    bagging_results.join('n_' + str(n_estimators), tester.test(*models,
+                                                               threshold=default_threshold))
 
 bagging_results.df
 ```
 ```python
-bagging_results.plot_statistic('f1')
+bagging_results.statistic('auc')
 ```
 
 About 100 estimators looks ideal.
@@ -320,12 +327,13 @@ boosting_results = ResultCollection()
 
 for n_estimators in [10, 50, 100]:
     models = trainer.boosting(n_estimators=n_estimators)
-    boosting_results.join('n_' + str(n_estimators), tester.test(*models))
+    boosting_results.join('n_' + str(n_estimators), tester.test(*models,
+                                                                threshold=default_threshold))
 
 boosting_results.df
 ```
 ```python
-boosting_results.plot_statistic('f1')
+boosting_results.statistic('auc')
 ```
 
 Again, about 100 estimators looks ideal.
@@ -365,10 +373,10 @@ results = tester.evaluate(models)
 results.df
 ```
 ```python
-results.plot_statistic('f1', xlabel='model')
+results.plot_statistic('auc', xlabel='model')
 ```
 
-The above graph shows the F1 performance of our models with no threshold set.
+The above graph shows the AUC performance of our models with no threshold set.
 This graph suggests that using either a decision tree or bagging is the best
 approach.
 
@@ -379,7 +387,7 @@ threshold_results = \
 threshold_results.df
 ```
 ```python
-threshold_results.plot_statistic('f1',
+threshold_results.plot_statistic('auc',
                                  xlabel='threshold')
 ```
 
@@ -387,8 +395,8 @@ This graph suggests that the boosting and bagging models are pretty good
 overall. It is not clear to me why the logistic regression and linear svm
 models, which were worse than the dummy model before, are now better.
 
-We might also want to look at how our F1 metric breaks down into precision and
-recall over our thresholds:
+We might also want to look at how precision and recall vary over our
+thresholds:
 ```python
 threshold_results.plot_statistic('precision',
                                  xlabel='threshold')
@@ -399,6 +407,6 @@ threshold_results.plot_statistic('recall',
 ```
 
 If we were targeting a specific threshold, then we would probably want to
-maximize precision instead of F1. In that case, the above graph showing
-precision would be important, and we might consider either the bagging or
-boosting model as the clear winner, depending on the threshold.
+maximize precision. In that case, the above graph showing precision would be
+important, and we might consider either the bagging or boosting model as the
+clear winner, depending on the threshold.

@@ -213,7 +213,7 @@ class Tester:
             else:
                 y_score = model.predict_proba(X)[:,1]
 
-            y_predict = model.predict(X)
+            y_predict = model.predict(X) # ONLY USED IF THRESHOLD NOT GIVEN!
             df_results = pd.DataFrame({ 'actual': y_actual,
                                         'score': y_score,
                                         'predict': y_predict },

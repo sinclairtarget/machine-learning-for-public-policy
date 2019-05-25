@@ -12,7 +12,7 @@
   we want is to seperate the data into 4 6-months windows. You should not drop
   the date_posted column and use the timestamps to split into train/test set.
   Also, you should write a function of dataset instead keeping a list.
-* [ ] There is no need to plot the f1 curve for different classifier. The
+* [x] There is no need to plot the f1 curve for different classifier. The
   result df should be concatenated vertically instead of horizontally. You
   should never use predict(), which has been emphasized many times by Rayid.
   AOC would be a much better metric than f1 with default threshold.
