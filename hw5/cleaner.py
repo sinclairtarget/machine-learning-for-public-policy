@@ -12,8 +12,6 @@ def unnecessary_columns(df):
                             'schoolid',
                             'school_ncesid',
                             'school_city',
-                            'school_state',
-                            'school_metro',
                             'school_district',
                             'school_county'])
 

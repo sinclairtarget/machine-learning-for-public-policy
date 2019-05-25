@@ -35,11 +35,11 @@ def binary_columns(df):
 
 def categorical_columns(df):
     """
-    Returns a list of columns that have string values and less than 50 unique
+    Returns a list of columns that have string values and less than 100 unique
     values.
     """
     return [name for name in df.columns
-            if df[name].dtype == np.object and len(pd.unique(df[name])) < 50]
+            if df[name].dtype == np.object and len(pd.unique(df[name])) < 100]
 
 
 def missing_columns(df):

@@ -59,8 +59,9 @@ We also drop all the other id columns, since we want to learn about the
 _characteristics_ of successful projects rather than which teachers and schools
 have successful projects.
 
-Finally, we also drop all columns that contain geographic information other
-than the longitude and latitude columns.
+Finally, we also drop some geographic columns that are too specific and would
+result in too many features. Instead we rely on a combination of long/lat,
+state, and metro to capture this information.
 
 ```python
 %psource cleaner.unnecessary_columns
