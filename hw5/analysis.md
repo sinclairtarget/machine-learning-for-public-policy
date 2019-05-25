@@ -284,7 +284,7 @@ for n_trees in [100, 500, 1200]:
 forest_results.statistic('auc')
 ```
 
-Around 50 trees seems to be the best option.
+Around 100 trees seems to be the best option.
 
 #### Bagging
 For the bagging approach, we need to decide on the number of base estimators to
@@ -301,7 +301,7 @@ for n_estimators in [100, 500, 1200]:
 bagging_results.statistic('auc')
 ```
 
-About 100 estimators looks ideal.
+Using 500 estimators seems about right.
 
 #### Boosting
 For the boosting approach, we again need to decide on the number of base
@@ -310,7 +310,7 @@ estimators.
 ```python
 boosting_results = ResultCollection()
 
-for n_estimators in [10, 50, 100]:
+for n_estimators in [100, 500, 1200]:
     models = trainer.boosting(n_estimators=n_estimators)
     boosting_results.join('n_' + str(n_estimators), tester.test(*models,
                                                                 threshold=default_threshold))
@@ -318,7 +318,7 @@ for n_estimators in [10, 50, 100]:
 boosting_results.statistic('auc')
 ```
 
-Again, about 100 estimators looks ideal.
+Using 1200 estimators seems to be the best option.
 
 ## Evaluation
 Now that we are evaluating our models, we will want to use our final holdout
@@ -326,11 +326,6 @@ time split.
 
 ```python
 df_train, df_test = holdout_split
-
-# Print final holdout training and test set
-(df_train.index.min(), df_train.index.max(), df_test.index.max())
-```
-```python
 trainer = Trainer(df_train, label_colname=label_colname, seed=SEED)
 tester = Tester(df_test, label_colname=label_colname)
 ```
@@ -346,13 +341,13 @@ set.
 
 ```python
 params = {
-    'linear_regression': { 'penalty': 'l1' },
+    'linear_regression': { 'c': 1 },
     'decision_tree': { 'max_depth': None },
     'k_nearest': { 'k': 3 },
     'svm': { 'c': 1 },
-    'forest': { 'n_trees': 50 },
-    'bagging': { 'n_estimators': 100 },
-    'boosting': { 'n_estimators': 100 }
+    'forest': { 'n_trees': 100 },
+    'bagging': { 'n_estimators': 500 },
+    'boosting': { 'n_estimators': 1200 }
 }
 
 models = trainer.train_all(parameters=params)
