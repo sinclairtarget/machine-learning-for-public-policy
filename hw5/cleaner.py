@@ -41,6 +41,20 @@ def handle_categorical(df):
     return df
 
 
+def discretize(df, binner=None):
+    columns = [
+        'students_reached',
+        'total_price_including_optional_support'
+    ]
+
+    if not binner:
+        binner = pipeline.Binner(n_bins=4, colnames=columns)
+
+    binner.fit(df)
+    df = binner.transform(df)
+    return df.drop(columns=columns), binner
+
+
 def label(df, label_colname):
     df[label_colname] = (
         (df.datefullyfunded - df.date_posted)
@@ -61,5 +75,6 @@ def clean(df):
     df = fix_types(df)
     df = handle_missing(df)
     df = handle_categorical(df)
+    df, _ = discretize(df)
     df = label(df)
     return df

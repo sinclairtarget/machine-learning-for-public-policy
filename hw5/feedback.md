@@ -4,7 +4,7 @@
 * [x] When creating dummy variables, you should not manually type in the names
   of columns. You should write a function to return a list of categorical
   variables.
-* [ ] You should discretize float variables like
+* [x] You should discretize float variables like
   "total_price_including_optional_support" and "students_reached" since the
   range of values is not standardized.
 * [ ] In the time split function, what you did is incorrect. You only equally

@@ -128,6 +128,15 @@ We convert them all to binary dummy variables:
 df = cleaner.handle_categorical(df)
 ```
 
+### Discretize Continuous Variables
+```python
+%psource cleaner.discretize
+```
+
+```python
+df, binner = cleaner.discretize(df)
+```
+
 ### Label Data
 Finally, we need to label our data. We also need to sort it in order of
 `date_posted` and drop our date columns.

@@ -4,6 +4,7 @@ features.
 """
 import numpy as np
 import pandas as pd
+from sklearn import preprocessing
 
 def impute(df, col, how='avg'):
     """
@@ -17,19 +18,6 @@ def impute(df, col, how='avg'):
         raise Exception(f"\"how\" argument of \"{how}\" is not supported.")
 
     df.loc[df[col].isnull(), col] = subst
-
-
-def bin(df, col, bins, labels=None):
-    """
-    Converts a continuous variable to a discrete one by grouping values into
-    a set number of bins.
-    """
-    new_col = col + '_binned'
-    max_val = np.max(df[col])
-    df[new_col] = pd.cut(df[col],
-                         bins + [max_val],
-                         include_lowest=True,
-                         labels=labels)
 
 
 def dummify(df, *colnames):

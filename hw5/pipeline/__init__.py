@@ -5,3 +5,4 @@ from .predict import *
 from .evaluate import *
 from .result import *
 from . import notebook
+from .binner import Binner
