@@ -7,7 +7,7 @@
 * [x] You should discretize float variables like
   "total_price_including_optional_support" and "students_reached" since the
   range of values is not standardized.
-* [ ] In the time split function, what you did is incorrect. You only equally
+* [x] In the time split function, what you did is incorrect. You only equally
   partition the whole dataset into 4 parts but lost the time information. What
   we want is to seperate the data into 4 6-months windows. You should not drop
   the date_posted column and use the timestamps to split into train/test set.

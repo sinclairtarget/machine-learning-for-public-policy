@@ -135,11 +135,12 @@ df = cleaner.handle_categorical(df)
 
 ```python
 df, binner = cleaner.discretize(df)
+df.head()
 ```
 
 ### Label Data
-Finally, we need to label our data. We also need to sort it in order of
-`date_posted` and drop our date columns.
+Finally, we need to label our data. We also drop the 'datefullyfunded' column
+once we've used it to generate our data.
 
 ```python
 %psource cleaner.label
@@ -167,13 +168,16 @@ be used for experimenting with model parameters. The test set will be used to
 evaluate our parameterized models at different thresholds.
 
 ```python
-splits = pipeline.time_split(df, 3)
-[(df_train.index.min(), df_train.index.max(), df_test.index.max()) \
+begin = df.date_posted.min()
+end = df.date_posted.max()
+splits = pipeline.time_split(df, 'date_posted', begin, end, 4, remove_date=False)
+[(df_train.date_posted.min(), df_train.date_posted.max(), df_test.date_posted.max()) \
     for df_train, df_test in splits]
 ```
 
 Here we take only the first two splits to use for validation:
 ```python
+splits = pipeline.time_split(df, 'date_posted', begin, end, 4, remove_date=True)
 validation_splits = splits[:-1]
 holdout_split = splits[-1]
 ```
@@ -184,17 +188,6 @@ two validation training sets.
 ```python
 dfs_train = [df_train for df_train, _ in validation_splits]
 dfs_test = [df_test for _, df_test in validation_splits]
-
-# Print training data sets
-[('split' + str(i), df_train.index.min(), df_train.index.max()) \
-    for i, df_train in enumerate(dfs_train, 1)]
-```
-```python
-# Print test data sets
-[('split' + str(i), df_test.index.min(), df_test.index.max()) \
-    for i, df_test in enumerate(dfs_test, 1)]
-```
-```python
 trainer = Trainer(*dfs_train, label_colname=label_colname, seed=SEED)
 tester = Tester(*dfs_test, label_colname=label_colname)
 ```

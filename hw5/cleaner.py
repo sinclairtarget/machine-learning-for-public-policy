@@ -62,11 +62,7 @@ def label(df, label_colname):
         .astype(float)
     )
 
-    df = df.sort_values('date_posted')
-    df = df.reset_index(drop=True)
-
-    df = df.drop(columns=['date_posted',
-                          'datefullyfunded'])
+    df = df.drop(columns=['datefullyfunded'])
     return df
 
 
