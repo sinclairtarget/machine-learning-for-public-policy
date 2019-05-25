@@ -229,9 +229,6 @@ for max_depth in [6, 12, 24]:
     tree_results.join(str(max_depth) + '_max', tester.test(*models,
                                                            threshold=default_threshold))
 
-tree_results.df
-```
-```python
 tree_results.statistic('auc')
 ```
 
@@ -250,9 +247,6 @@ for k in [3, 6, 12, 24]:
     k_nearest_results.join('k_' + str(k), tester.test(*models,
                                                       threshold=default_threshold))
 
-k_nearest_results.df
-```
-```python
 k_nearest_results.statistic('auc')
 ```
 
@@ -270,9 +264,6 @@ for c in [1, 10, 100]:
     svm_results.join('c_' + str(c), tester.test(*models,
                                                 threshold=default_threshold))
 
-svm_results.df
-```
-```python
 svm_results.statistic('auc')
 ```
 
@@ -290,9 +281,6 @@ for n_trees in [100, 500, 1200]:
     forest_results.join('n_' + str(n_trees), tester.test(*models,
                                                          threshold=default_threshold))
 
-forest_results.df
-```
-```python
 forest_results.statistic('auc')
 ```
 
@@ -310,9 +298,6 @@ for n_estimators in [100, 500, 1200]:
     bagging_results.join('n_' + str(n_estimators), tester.test(*models,
                                                                threshold=default_threshold))
 
-bagging_results.df
-```
-```python
 bagging_results.statistic('auc')
 ```
 
@@ -330,9 +315,6 @@ for n_estimators in [10, 50, 100]:
     boosting_results.join('n_' + str(n_estimators), tester.test(*models,
                                                                 threshold=default_threshold))
 
-boosting_results.df
-```
-```python
 boosting_results.statistic('auc')
 ```
 
