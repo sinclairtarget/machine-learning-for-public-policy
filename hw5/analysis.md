@@ -397,3 +397,12 @@ If we were targeting a specific threshold, then we would probably want to
 maximize precision. In that case, the above graph showing precision would be
 important, and we might consider either the bagging or boosting model as the
 clear winner, depending on the threshold.
+
+Here are combined precision / recall curves for the bagging model and the
+boosting model:
+```python
+threshold_results.plot_precision_recall('bagging')
+```
+```python
+threshold_results.plot_precision_recall('boosting')
+```

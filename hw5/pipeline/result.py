@@ -155,6 +155,26 @@ class ResultCollection:
             plt.savefig(filename)
 
 
+    def plot_precision_recall(self, model_name, filename=None):
+        plt.figure(figsize=(6, 6))
+        plt.plot([str(x) for x in self.df.index.values],
+                 self.df['precision_' + model_name].values,
+                 label='precision',
+                 color='red')
+        plt.plot([str(x) for x in self.df.index.values],
+                 self.df['recall_' + model_name].values,
+                 label='recall',
+                 color='blue')
+        plt.legend()
+
+        plt.xlabel('threshold')
+        plt.ylabel('precision / recall')
+        plt.show()
+
+        if filename:
+            plt.savefig(filename)
+
+
     def from_stack(results, index=None):
         index = index or list(range(1, len(results) + 1))
         return ResultCollection(DataFrame([r.as_series() for r in results],

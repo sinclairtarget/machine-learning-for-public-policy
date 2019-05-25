@@ -22,10 +22,10 @@
   so on.
 * [x] In random forest and bagging, the number of trees should be larger. 10 is
   really small and doesn't make sense.
-* [ ] You should compare the AOC instead of F1 for different models. You should
+* [x] You should compare the AOC instead of F1 for different models. You should
   also plot precision vs recall curve.
 * [ ] Missing problem analysis, i.e. how would you use your trained model to
   interpret the problem and what suggestion you can give.
-* [ ] You should combine precision and recall curves in a single graph. You
+* [x] You should combine precision and recall curves in a single graph. You
   need to select the best parameter for each model in the holdoutset. The
   prediction function based on population threshold could be improved.
