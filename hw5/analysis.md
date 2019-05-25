@@ -39,9 +39,12 @@ pipeline.notebook.set_up()
 
 SEED = 1234
 
+to_datetime = pipeline.datetime_converter('%m/%d/%y')
 df = pipeline.read_csv('projects_2012_2013.csv',
-                       parse_dates=['date_posted', 'datefullyfunded'],
-                       infer_datetime_format=True)
+                       converters={
+                           'date_posted': to_datetime,
+                           'datefullyfunded': to_datetime
+                       })
 df.head()
 ```
 
