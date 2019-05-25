@@ -336,8 +336,13 @@ tester = Tester(df_test, label_colname=label_colname)
 ```
 
 Next we set all of our model parameters according to the analysis we did in the
-previous section and then train all of our models on our training set. We then
-test our trained models on our holdout test set.
+previous section and then train all of our models on our training set. _**We do
+not pick new parameters here**, because the whole point of picking the
+parameters without using the holdout set is to avoid overfitting to the holdout
+data._ (See [this
+guide](https://scikit-learn.org/stable/modules/cross_validation.html) from the
+Scikitlearn documentation.) We then test our trained models on our holdout test
+set.
 
 ```python
 params = {
