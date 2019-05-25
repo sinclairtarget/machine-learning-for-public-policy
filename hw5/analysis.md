@@ -48,12 +48,20 @@ df.head()
 ```
 
 ## Data Cleaning
+We will walk through the data cleaning process now using the entire dataset.
+This is only to illustrate the transformations we do on the data—we will
+repeat this cleaning step later for each of our training and test set pairs.
+
+```python
+df_example = df.copy()
+```
+
 ### Remove Unnecessary Columns
 First we remove any columns that contain a unique value for every row. These
 columns will not be useful as features.
 
 ```python
-pipeline.unique_columns(df)
+pipeline.unique_columns(df_example)
 ```
 We also drop all the other id columns, since we want to learn about the
 _characteristics_ of successful projects rather than which teachers and schools
@@ -67,19 +75,19 @@ state, and metro to capture this information.
 %psource cleaner.unnecessary_columns
 ```
 ```python
-df = cleaner.unnecessary_columns(df)
+df_example = cleaner.unnecessary_columns(df_example)
 ```
 
 ### Fix Types
 Some columns do not have the correct types. For example, the `school_charter`
 column contains `f` and `t` values but should instead be binary:
 ```python
-pd.unique(df.school_charter)
+pd.unique(df_example.school_charter)
 ```
 
 These are all the implicitly binary columns:
 ```python
-pipeline.binary_columns(df)
+pipeline.binary_columns(df_example)
 ```
 
 We convert all of them to explicit binary columns.
@@ -87,18 +95,18 @@ We convert all of them to explicit binary columns.
 %psource cleaner.fix_types
 ```
 ```python
-df = cleaner.fix_types(df)
+df_example = cleaner.fix_types(df_example)
 ```
 
 ### Handle Missing Data
 The following columns have missing data:
 ```python
-missing = pipeline.missing_columns(df)
+missing = pipeline.missing_columns(df_example)
 missing
 ```
 
 ```python
-pipeline.plot_missing(df, *missing)
+pipeline.plot_missing(df_example, *missing)
 ```
 
 Given the large amount of missing data for both the `secondary_focus_subject`
@@ -108,7 +116,7 @@ rows with missing data, since there are so few.
 %psource cleaner.handle_missing
 ```
 ```python
-df = cleaner.handle_missing(df)
+df_example = cleaner.handle_missing(df_example)
 ```
 
 ### Handle Categorical Variables
@@ -117,7 +125,7 @@ variables.
 
 These are our categorical variables:
 ```python
-pipeline.categorical_columns(df)
+pipeline.categorical_columns(df_example)
 ```
 
 We convert them all to binary dummy variables:
@@ -125,40 +133,44 @@ We convert them all to binary dummy variables:
 %psource cleaner.handle_categorical
 ```
 ```python
-df = cleaner.handle_categorical(df)
+df_example, _ = cleaner.handle_categorical(df_example)
 ```
 
 ### Discretize Continuous Variables
+We will also want to discretize some of our continuous features.
 ```python
 %psource cleaner.discretize
 ```
 
 ```python
-df, binner = cleaner.discretize(df)
-df.head()
+bin_columns = [
+    'students_reached',
+    'total_price_including_optional_support'
+]
+df_example, _ = cleaner.discretize(df_example, bin_columns)
 ```
 
 ### Label Data
-Finally, we need to label our data. We also drop the 'datefullyfunded' column
-once we've used it to generate our data.
+Finally, we will need to label our data. We will also drop the
+'datefullyfunded' column once we've used it to generate our data.
 
 ```python
 %psource cleaner.label
 ```
 ```python
 label_colname = 'not_funded_in_60_days'
-df = cleaner.label(df, label_colname)
+df_example = cleaner.label(df_example, label_colname)
 ```
 
-Our final dataframe looks like the following:
+The example cleaned dataset now looks like the following:
 ```python
-df.head()
+df_example.head()
 ```
 
 We see below that 29% of projects are not funded within 60 days of being
 posted.
 ```python
-df.not_funded_in_60_days.value_counts(normalize=True)
+df_example.not_funded_in_60_days.value_counts(normalize=True)
 ```
 
 We can use this value later as our default threshold.
@@ -175,14 +187,28 @@ evaluate our parameterized models at different thresholds.
 ```python
 begin = df.date_posted.min()
 end = df.date_posted.max()
-splits = pipeline.time_split(df, 'date_posted', begin, end, 4, remove_date=False)
+splits = pipeline.time_split(df, 'date_posted', begin, end, 4)
 [(df_train.date_posted.min(), df_train.date_posted.max(), df_test.date_posted.max()) \
     for df_train, df_test in splits]
 ```
 
-Here we take only the first two splits to use for validation:
+Now that we have our splits, we clean all of our datasets:
 ```python
-splits = pipeline.time_split(df, 'date_posted', begin, end, 4, remove_date=True)
+# Now clean
+cleaned_splits = []
+for df_train, df_test in splits:
+    df_train_clean, domains, binner = \
+        cleaner.clean(df_train, bin_columns, label_colname)
+    df_test_clean, _, _ = \
+        cleaner.clean(df_test, bin_columns, label_colname, domains, binner)
+    cleaned_splits.append((df_train_clean, df_test_clean))
+
+splits = cleaned_splits
+```
+
+We take only the first two splits to use for validation, leaving a holdout for
+final evaluation later.
+```python
 validation_splits = splits[:-1]
 holdout_split = splits[-1]
 ```

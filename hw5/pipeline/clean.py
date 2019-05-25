@@ -49,6 +49,7 @@ def dummify_domain(df, domains, *colnames):
                 new_colname = colname + '_is_' + pretty_name
                 df[new_colname] = (df[colname] == uniq).astype(float)
             else:
-                df[unknown] = (df[unknown] | df[colname] == uniq).astype(float)
+                df[unknown] = \
+                    (df[unknown].astype(bool) | (df[colname] == uniq)).astype(float)
 
     return domains

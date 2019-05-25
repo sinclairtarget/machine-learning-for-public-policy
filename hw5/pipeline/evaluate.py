@@ -21,7 +21,7 @@ def split(df, label_colname, test_size, seed):
     return df_train, df_test
 
 
-def time_split(df, colname, begin, end, n_splits, remove_date=True):
+def time_split(df, colname, begin, end, n_splits, remove_date=False):
     """
     Splits a dataframe by a given date column. The date range given by begin
     and end is divided into n_splits equal size splits. These splits are then

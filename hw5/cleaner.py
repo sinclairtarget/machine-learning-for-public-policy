@@ -60,7 +60,7 @@ def label(df, label_colname):
         .astype(float)
     )
 
-    df = df.drop(columns=['datefullyfunded'])
+    df = df.drop(columns=['datefullyfunded', 'date_posted'])
     return df
 
 
