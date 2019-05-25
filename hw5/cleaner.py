@@ -44,16 +44,11 @@ def handle_categorical(df, domains=None):
     return df, domains
 
 
-def discretize(df, binner=None):
-    columns = [
-        'students_reached',
-        'total_price_including_optional_support'
-    ]
-
+def discretize(df, columns, binner=None):
     if not binner:
         binner = pipeline.Binner(n_bins=4, colnames=columns)
+        binner.fit(df)
 
-    binner.fit(df)
     df = binner.transform(df)
     return df.drop(columns=columns), binner
 
@@ -69,11 +64,11 @@ def label(df, label_colname):
     return df
 
 
-def clean(df):
+def clean(df, bin_columns, label_colname, domains=None, binner=None):
     df = unnecessary_columns(df)
     df = fix_types(df)
     df = handle_missing(df)
-    df = handle_categorical(df)
-    df, _ = discretize(df)
-    df = label(df)
-    return df
+    df, domains = handle_categorical(df, domains)
+    df, binner = discretize(df, bin_columns, binner)
+    df = label(df, label_colname)
+    return df, domains, binner
