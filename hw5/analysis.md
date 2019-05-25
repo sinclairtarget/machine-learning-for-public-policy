@@ -193,11 +193,11 @@ regularization.
 
 ```python
 lr_results = ResultCollection()
-lr_l1_models = trainer.logistic_regression(penalty='l1')
-lr_results.join('L1', tester.test(*lr_l1_models))
 
-lr_l2_models = trainer.logistic_regression(penalty='l2')
-lr_results.join('L2', tester.test(*lr_l2_models))
+for c in [1, 10, 100]:
+    models = trainer.logistic_regression(c=c)
+    lr_results.join('c_' + str(c), tester.test(*models))
+
 lr_results.df
 ```
 ```python

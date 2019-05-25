@@ -37,14 +37,14 @@ class Trainer:
         return models if len(models) > 1 else models[0]
 
 
-    def logistic_regression(self, penalty='l2'):
+    def logistic_regression(self, c=1):
         """
         Returns logistic regression models fitted to the training data.
         """
         models = []
         for X, y in self._training_data():
             model = LogisticRegression(solver='liblinear',
-                                       penalty=penalty,
+                                       C=c,
                                        random_state=self.seed)
             model.fit(X, y)
             models.append(model)
