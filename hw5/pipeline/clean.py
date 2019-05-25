@@ -24,8 +24,31 @@ def dummify(df, *colnames):
     """
     Converts columns containing discrete values into several binary columns.
     """
+    domains = {}
     for colname in colnames:
+        domains[colname] = df[colname].unique()
+
+    return dummify_domain(df, domains, *colnames)
+
+
+def dummify_domain(df, domains, *colnames):
+    """
+    Converts columns containing discrete values into several binary columns.
+
+    This version uses pre-existing category domains.
+    """
+    for colname in colnames:
+        domain = domains[colname]
+        unknown = colname + '_is_unknown'
+        df[unknown] = 0.0
+
         uniqs = df[colname].unique()
         for uniq in uniqs:
-            new_colname = colname + '_is_' + str(uniq).lower().replace(' ', '_')
-            df[new_colname] = (df[colname] == uniq).astype(float)
+            if uniq in domain:
+                pretty_name = str(uniq).lower().replace(' ', '_')
+                new_colname = colname + '_is_' + pretty_name
+                df[new_colname] = (df[colname] == uniq).astype(float)
+            else:
+                df[unknown] = (df[unknown] | df[colname] == uniq).astype(float)
+
+    return domains

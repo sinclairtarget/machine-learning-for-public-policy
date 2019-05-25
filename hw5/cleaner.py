@@ -32,11 +32,16 @@ def handle_missing(df):
     return df
 
 
-def handle_categorical(df):
+def handle_categorical(df, domains=None):
     categorical_columns = pipeline.categorical_columns(df)
-    pipeline.dummify(df, *categorical_columns)
+
+    if domains:
+        pipeline.dummify_domain(df, domains, *categorical_columns)
+    else:
+        domains = pipeline.dummify(df, *categorical_columns)
+
     df = df.drop(columns=categorical_columns)
-    return df
+    return df, domains
 
 
 def discretize(df, binner=None):
