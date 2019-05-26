@@ -6,18 +6,24 @@ import numpy as np
 import pandas as pd
 from sklearn import preprocessing
 
-def impute(df, col, how='avg'):
+def impute(df, colname, how='avg'):
     """
     Replaces all null values in the named column with an imputed value.
+
+    Adds a column recording which rows were imputed.
     """
     subst = np.nan
 
     if how == 'avg':
-        subst = np.average(df.loc[df[col].notnull(), col])
+        subst = np.average(df.loc[df[colname].notnull(), colname])
+    elif how == 'mode':
+        subst = df[colname].mode()[0]
     else:
         raise Exception(f"\"how\" argument of \"{how}\" is not supported.")
 
-    df.loc[df[col].isnull(), col] = subst
+    nulls = df[colname].isnull()
+    df.loc[nulls, colname] = subst
+    df[colname + '_imputed'] = nulls.astype(float)
 
 
 def dummify(df, *colnames):

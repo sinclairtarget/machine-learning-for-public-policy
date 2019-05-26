@@ -28,6 +28,10 @@ def fix_types(df):
 def handle_missing(df):
     df = df.drop(columns=['secondary_focus_subject',
                           'secondary_focus_area'])
+
+    # Impute school_metro
+    pipeline.impute(df, 'school_metro', how='mode')
+
     df = df.dropna()
     return df
 
