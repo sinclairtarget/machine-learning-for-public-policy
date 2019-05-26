@@ -238,7 +238,7 @@ for c in [1, 10, 100]:
 lr_results.statistic('auc')
 ```
 
-It looks like using $c = 1$ is the best here.
+It looks like using $c = 10$ is the best here.
 
 #### Decision Tree
 For our decision tree model, we need to experiment with tree depth to see what
@@ -277,7 +277,7 @@ for k in [3, 6, 12, 24]:
 k_nearest_results.statistic('auc')
 ```
 
-It looks like we want to keep $k$ on the smaller side.
+It looks like we want to set $k$ to around 12.
 
 #### SVM
 For our support vector machine model, we will want to experiment with setting
@@ -311,7 +311,7 @@ for n_trees in [100, 500, 1200]:
 forest_results.statistic('auc')
 ```
 
-Around 100 trees seems to be the best option.
+Around 500 trees seems to be the best option.
 
 #### Bagging
 For the bagging approach, we need to decide on the number of base estimators to
@@ -328,7 +328,7 @@ for n_estimators in [100, 500, 1200]:
 bagging_results.statistic('auc')
 ```
 
-Using 500 estimators seems about right.
+Using 100 estimators seems about right.
 
 #### Boosting
 For the boosting approach, we again need to decide on the number of base
@@ -345,7 +345,7 @@ for n_estimators in [100, 500, 1200]:
 boosting_results.statistic('auc')
 ```
 
-Using 1200 estimators seems to be the best option.
+Using 1200 estimators seems to be the best, most consistent option.
 
 ## Evaluation
 Now that we are evaluating our models, we will want to use our final holdout
@@ -368,12 +368,12 @@ set.
 
 ```python
 params = {
-    'linear_regression': { 'c': 1 },
+    'linear_regression': { 'c': 10 },
     'decision_tree': { 'max_depth': None },
-    'k_nearest': { 'k': 3 },
+    'k_nearest': { 'k': 12 },
     'svm': { 'c': 1 },
-    'forest': { 'n_trees': 100 },
-    'bagging': { 'n_estimators': 500 },
+    'forest': { 'n_trees': 500 },
+    'bagging': { 'n_estimators': 100 },
     'boosting': { 'n_estimators': 1200 }
 }
 
@@ -386,8 +386,8 @@ results.plot_statistic('auc', xlabel='model', ylim=(0.4, 0.6))
 ```
 
 The above graph shows the AUC performance of our models with no threshold set.
-This graph suggests that using either a decision tree or bagging is the best
-approach.
+This graph suggests that using either a linear SVM or logistic regression
+model is the right approach.
 
 We also want to test using our thresholds:
 ```python
@@ -400,9 +400,8 @@ threshold_results.plot_statistic('auc',
                                  xlabel='threshold')
 ```
 
-This graph suggests that the boosting and bagging models are pretty good
-overall. It is not clear to me why the logistic regression and linear svm
-models, which were worse than the dummy model before, are now better.
+This graph shows that the linear SVM and logistic regression models are the
+best models at many thresholds, though the random forest model does well also.
 
 We might also want to look at how precision and recall vary over our
 thresholds:
@@ -417,14 +416,15 @@ threshold_results.plot_statistic('recall',
 
 If we were targeting a specific threshold, then we would probably want to
 maximize precision. In that case, the above graph showing precision would be
-important, and we might consider either the bagging or boosting model as the
-clear winner, depending on the threshold.
+important. If we had only a small amount of resources available to intervene,
+then we might consider the random forest model, even though the linear SVM and
+logistic regression models do better at higher thresholds.
 
-Here are combined precision / recall curves for the bagging model and the
-boosting model:
+Here are combined precision / recall curves for the linear SVM model and the
+random forest model:
 ```python
-threshold_results.plot_precision_recall('bagging')
+threshold_results.plot_precision_recall('linear_svm')
 ```
 ```python
-threshold_results.plot_precision_recall('boosting')
+threshold_results.plot_precision_recall('forest')
 ```

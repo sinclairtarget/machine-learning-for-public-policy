@@ -24,7 +24,7 @@
   really small and doesn't make sense.
 * [x] You should compare the AOC instead of F1 for different models. You should
   also plot precision vs recall curve.
-* [ ] Missing problem analysis, i.e. how would you use your trained model to
+* [x] Missing problem analysis, i.e. how would you use your trained model to
   interpret the problem and what suggestion you can give.
 * [x] You should combine precision and recall curves in a single graph. You
   need to select the best parameter for each model in the holdoutset. The

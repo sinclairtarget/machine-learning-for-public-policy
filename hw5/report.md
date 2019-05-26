@@ -28,36 +28,48 @@ Having trained lots of models on our input data, we need to carefully consider
 which model will be the best model according to our target metric.
 
 If you examine Figure 1, you will see that at the 5% threshold the model with
-the best precision is the boosting classifier (followed very quickly by the
-bagging classifier). At this threshold, both models are able to predict with
-roughly 52% precision.
+the best precision is the random forest classifier (followed very quickly by
+the linear SVM classifier). At this threshold, both models are able to predict
+with roughly 34% precision.
 
 This does not sound like a particularly impressive figure, because it means
-that one out of every two times we feature a project, it would have been funded
-anyway. But this model performs significantly better than picking randomly,
-which would yield a project in need of funding only 29% of the time.
+that more often than not we are making the wrong prediction and feature a
+project that would have been funded anyway. But this model performs
+better than picking randomly, which would yield a project in need
+of funding only 29% of the time.
 
-The precision might be higher if we lowered our threshold, but this would mean
-that we are reaching fewer projects in need of funding. Figure 2 shows how
-recall falls as we lower the threshold, and Figure 3 shows how this fall in
-recall offsets the gain in precision.
-
-So we ought to deploy the boosting classifier in production.
+The precision might be higher if we lowered our threshold slightly, but this
+would mean that we are reaching fewer projects in need of funding. Figure 2
+shows how recall falls as we lower the threshold.
 
 ## Performance Over Time
-The last figure, Figure 4, shows how the precision of several models varies
+The last figure, Figure 3, shows how the precision of several models varies
 over time. This graph is showing precision at the 5% threshold.
 
 What this graph tells us is that precision will vary going forward. Just
-because we saw precision of 52% when the model was used on our test set does
+because we saw precision of 34% when the model was used on our test set does
 not mean we will keep seeing that value going forward. In fact, the model did
 better on the second time split than on the final test set, showing exactly how
 precision could fall (though also rise) for new data.
 
+## Policy Recommendation
+Based on this analysis, we should employ the **random forest** model with
+$n_trees = 500$ in production because it does best at the 5% threshold. Though
+the overall performance is not very impressive, the model is still better than
+randomly picking projects to feature.
+
+The model will give the web administrators for DonorsChoose.org the opportunity
+to feature 5% of all projects on their landing page so that those projects get
+more visibility. By using the model, the administrators can be confident that
+they are doing a better job of featuring projects that might otherwise not get
+funded than if the administrators picked projects randomly.
+
+Going forward, the site administrators should continue to train the random
+forest model using new data so that its performance can improve. This should
+help smooth out the inconsistency in performance that is apparent in Figure 3.
+
 ![Precision](images/precision.png)
 
 ![Recall](images/recall.png)
-
-![F1](images/f1.png)
 
 ![Precision Over Time](images/precision_splits.png)
