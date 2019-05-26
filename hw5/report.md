@@ -54,7 +54,7 @@ precision could fall (though also rise) for new data.
 
 ## Policy Recommendation
 Based on this analysis, we should employ the **random forest** model with
-$n_trees = 500$ in production because it does best at the 5% threshold. Though
+$n\_trees = 500$ in production because it does best at the 5% threshold. Though
 the overall performance is not very impressive, the model is still better than
 randomly picking projects to feature.
 
