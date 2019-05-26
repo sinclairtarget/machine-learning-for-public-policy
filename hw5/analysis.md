@@ -382,7 +382,7 @@ results = tester.evaluate(models)
 results.df
 ```
 ```python
-results.plot_statistic('auc', xlabel='model')
+results.plot_statistic('auc', xlabel='model', ylim=(0.4, 0.6))
 ```
 
 The above graph shows the AUC performance of our models with no threshold set.

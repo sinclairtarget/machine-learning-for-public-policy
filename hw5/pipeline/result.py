@@ -132,7 +132,7 @@ class ResultCollection:
         return df
 
 
-    def plot_statistic(self, stat_name, xlabel='split', filename=None):
+    def plot_statistic(self, stat_name, xlabel='split', ylim=None, filename=None):
         stat_df = self.df.filter(regex=stat_name)
         stat_df.columns = self.suffixes
 
@@ -145,6 +145,10 @@ class ResultCollection:
             plt.legend()
         else:
             plt.figure(figsize=(14, 3))
+
+            if ylim:
+                plt.ylim(ylim)
+
             plt.bar(stat_df.columns, stat_df.iloc[0].values)
 
         plt.xlabel(xlabel)
